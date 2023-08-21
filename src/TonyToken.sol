@@ -19,7 +19,7 @@ contract TonyToken is ERC20, Ownable {
     error AddressCannotSend();
     error AddressCannotReceive();
 
-    constructor() ERC20("TonyToken", "ony") {
+    constructor() ERC20("TonyToken", "Tony") {
         _mint(msg.sender, 10_000);
     }
 
