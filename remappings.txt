@@ -1,2 +1,3 @@
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
 @bancorprotocol/converter=lib/contracts-solidity/solidity/contracts/converter
+@erc1363-payable-token/contracts=lib/erc1363-payable-token/contracts
