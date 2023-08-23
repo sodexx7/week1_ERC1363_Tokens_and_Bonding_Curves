@@ -81,6 +81,7 @@ abstract contract BondingCurveToken is Initializable, ERC1363, BancorFormula {
 
     function _curvedBurnFor(address user, uint256 amount) internal validGasPrice validBurn(amount) returns (uint256) {
         uint256 reimbursement = calculateCurvedBurnReturn(amount);
+        
         _burn(user, amount);
         emit CurvedBurn(user, amount, reimbursement);
         return reimbursement;

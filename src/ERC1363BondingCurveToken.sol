@@ -25,14 +25,31 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * https://github.com/tarrencev/curve-bonded-tokens/blob/master/contracts/BondingCurveToken.sol
  * https://github.com/bancorprotocol/contracts-solidity/blob/v1.22.10/solidity/contracts/converter/BancorFormula.sol (Bancor offical code )
  * 
+ * other references
+ * https://github.com/relevant-community/bonding-curve/blob/master/contracts/BondingCurve.sol
+ * 
+ * ERC1363
+ * https://github.com/vittominacori/erc1363-payable-token/blob/v4.9.3/contracts/token/ERC1363/ERC1363.sol
+ * 
  * TODO
  * 1: how to prevent from the sandswitch? gasprice?
  * 2: Are there some problem with the increament counts each time?
  * 3. Some uncessary code should elimate
+ * 4. The seller beyond the pool. how to deal with the situaiton?
  */
 contract ERC1363BondingCurveToken is Ownable, ERC1363, BondingCurveToken {
+
+    error NoEnoughtBCTToken();
     /* Reserve Token */
     ERC1363 public reserveToken;
+
+
+    modifier enoughEnoughtBCTToken(uint256 amount) {
+        if(amount> balanceOf(msg.sender)){
+            revert NoEnoughtBCTToken();
+        }
+        _;
+    }
 
      constructor() ERC20("ERC1363BondingCurveToken", "BCT1363") {
         
@@ -62,8 +79,8 @@ contract ERC1363BondingCurveToken is Ownable, ERC1363, BondingCurveToken {
         _curvedMint(amount);
     }
 
-    function burn(uint256 amount) public {
-        _curvedBurn(amount);
+    function burn(uint256 amount) enoughEnoughtBCTToken(amount)public {
+         _curvedBurn(amount);
     }
 
     /**
