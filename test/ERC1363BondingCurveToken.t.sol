@@ -31,7 +31,7 @@ import {ERC1363Token} from "src/ERC1363Token.sol";
  * 
  *  I guess the reason of the missing is the BancorFormula, It's unavoidable that there are some missing. 
  *  such as the actual buy pair:500000000000000000000 ERC1363Token =>  1414213562373095048801 BCTToken
- *  1414213562373095048801 BCTToken => 499999999999999999999 ERC1363Token. The missing: 1/10**20.
+ *  1414213562373095048801 BCTToken => 499999999999999999999 ERC1363Token. The missing: 1/10**18.
  *  
  */
 contract BCTTokenTest is Test,ERC1363BondingCurveToken {
@@ -97,7 +97,7 @@ contract BCTTokenTest is Test,ERC1363BondingCurveToken {
 
         uint32 reserveRatio =  500000; 
         // involved with the sandswitch
-        uint256 gasPrice = 0;  
+        uint256 gasPrice = 100;  
         // create BCTToken and set the bodingCurve's init params
         BCTToken = new ERC1363BondingCurveToken();
         uint256 initialPoolBalance = 500*10**BCTSwapToken.decimals();
@@ -176,15 +176,6 @@ contract BCTTokenTest is Test,ERC1363BondingCurveToken {
      
     }
 
-
-    function test_RevertWhenBeyondBCTTokenBalance() external {
-        uint256 burnAmount = BCTToken.balanceOf(buyerAddress) +1;
-        vm.prank(buyerAddress);
-        vm.expectRevert(abi.encodeWithSignature("NoEnoughtBCTToken()"));
-        BCTToken.burn(burnAmount);
-    }
-
-
      function test_SandSwitchByBuyBCT() external {
         
         BCTSwapToken.transfer(buyerAddress, 1000*10**BCTSwapToken.decimals());
@@ -203,7 +194,7 @@ contract BCTTokenTest is Test,ERC1363BondingCurveToken {
         BCTSwapToken.transfer(sandswitchAttacker, 1000*10**BCTSwapToken.decimals());
         uint256 attackReceiveBCT =  test_BuyOneTime(sandswitchAttacker,amountSell);
 
-        // buyerAddress sell 100 BCTSwapToken uint256 receiveBCTAmount = 
+        // buyerAddress sell 100 BCTSwapToken 
         uint256 actualBCTTokens =  test_BuyOneTime(buyerAddress,amountSell);
 
         // back-running
@@ -218,11 +209,31 @@ contract BCTTokenTest is Test,ERC1363BondingCurveToken {
          * Because the missing while calculating.
          * such as  sell ERC1363Token 500000000000000000000     get 414213562373095048801 BCTToken
          *          burn BCTToken     414213562373095048801     get 499999999999999999999 ERC1363Token
-         * whose(ERC1363Token) actual value lost 1/10*21. The ultimate result substract 1.
+         * whose(ERC1363Token) actual value lost 1/10*18. The ultimate result substract 1.
          * 
          **/
 
          assertEq((expectedBCTTokens-actualBCTTokens)/10**18,((receiveBCTSwapToken-amountSell)/10**18)-1);
+
+    }
+
+    /**
+     * When an attacker want do sandswith to the buyeraddress while finding  a buyer's tx is pending. The attacker's tx must be included the block by the miner before the buyer's tx.
+     * Firstly, the attacker can set a higher gas to make its tx be executed before the buyer's tx. 
+     * So one solution is the bondingCurve can set the max gas price to prevent the attacker's tx execute before the buyer's tx. But this solution rely on the gas price, which is fluctuating。
+     * Can't sure that will lead some other problems?
+     * 
+     * Alternative soluiton is set the price slippage. The same as uniswap. calculating the expected receivedAmount, based on the slippage,make sure get the least receivedAmount.
+     * But when the buyer calculate the expected return Amount. it's just basd on the current point in the boding curve, which means if the font run executes, the current price have changed.
+     * So can't avoid the sandswitch.
+     * 
+     * It seems no ways to mock the pending tx? 
+     * 
+     */
+    // 
+    function test_PrteventSandSwitchByBuyBCT() external {
+        
+        
 
     }
 
@@ -253,6 +264,13 @@ contract BCTTokenTest is Test,ERC1363BondingCurveToken {
         // console.log("receive ",receiveBCTSwapToken/10**18," ERC1363Token and burn BCTToken", burnAmount/10**18) ;
         vm.stopPrank();
         return receiveBCTSwapToken;
+    }
+
+     function test_RevertWhenBeyondBCTTokenBalance() external {
+        uint256 burnAmount = BCTToken.balanceOf(buyerAddress) +1;
+        vm.prank(buyerAddress);
+        vm.expectRevert(abi.encodeWithSignature("NoEnoughtBCTToken()"));
+        BCTToken.burn(burnAmount);
     }
 
 }
