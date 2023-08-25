@@ -6,6 +6,8 @@ import "./erc1363-payable-token/ERC1363.sol";
 import "./erc1363-payable-token/ERC1363.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+import "forge-std/console.sol";
+
 /**
  * @title ERC1363BondingCurveToken
  * @dev Bonding curve contract based on Bacor formula,my current implemention is linear bonding curve.
@@ -63,8 +65,8 @@ contract ERC1363BondingCurveToken is Ownable, ERC1363, BondingCurveToken {
   }
 
     function mint(uint256 amount) public {
-        require(reserveToken.transferFromAndCall(msg.sender,address(this), amount));
         _curvedMint(amount);
+        require(reserveToken.transferFromAndCall(msg.sender,address(this), amount));
     }
 
     function burn(uint256 amount) enoughEnoughtBCTToken(amount)public {
