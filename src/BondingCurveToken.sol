@@ -6,7 +6,6 @@ import "./erc1363-payable-token/ERC1363.sol";
 
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-
 /**
  * @title Bonding Curve
  * @dev Bonding curve contract based on Bacor formula
@@ -37,12 +36,11 @@ abstract contract BondingCurveToken is Initializable, ERC1363, BancorFormula {
     event CurvedMint(address sender, uint256 amount, uint256 deposit);
     event CurvedBurn(address sender, uint256 amount, uint256 reimbursement);
 
-
-    function initialize(uint256 _initialSupply, uint32 _reserveRatio, uint256 _gasPrice) initializer public payable {
+    function initialize(uint256 _initialSupply, uint32 _reserveRatio, uint256 _gasPrice) public payable initializer {
         reserveRatio = _reserveRatio;
         gasPrice = _gasPrice;
         _mint(msg.sender, _initialSupply);
-  }
+    }
 
     function calculateCurvedMintReturn(uint256 amount) public view returns (uint256) {
         return calculatePurchaseReturn(totalSupply(), poolBalance(), reserveRatio, amount);
@@ -81,7 +79,7 @@ abstract contract BondingCurveToken is Initializable, ERC1363, BancorFormula {
 
     function _curvedBurnFor(address user, uint256 amount) internal validGasPrice validBurn(amount) returns (uint256) {
         uint256 reimbursement = calculateCurvedBurnReturn(amount);
-        
+
         _burn(user, amount);
         emit CurvedBurn(user, amount, reimbursement);
         return reimbursement;
