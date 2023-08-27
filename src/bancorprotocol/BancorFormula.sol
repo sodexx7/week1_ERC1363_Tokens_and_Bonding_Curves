@@ -725,7 +725,7 @@ contract BancorFormula is IBancorFormula {
      * - This function finds the position of [the smallest value in "maxExpArray" larger than or equal to "x"]
      * - This function finds the highest position of [a value in "maxExpArray" larger than or equal to "x"]
      */
-    function findPositionInMaxExpArray(uint256 _x) internal view returns (uint8) {
+    function findPositionInMaxExpArray(uint256 _x) internal view returns(uint8 position) {
         uint8 lo = MIN_PRECISION;
         uint8 hi = MAX_PRECISION;
 
@@ -978,7 +978,7 @@ contract BancorFormula is IBancorFormula {
     /**
      * @dev computes W(x / FIXED_1) / (x / FIXED_1) * FIXED_1
      */
-    function lowerStake(uint256 _x) internal view returns (uint256) {
+    function lowerStake(uint256 _x) internal view returns (uint256 lambertPos) {
         if (_x <= LAMBERT_CONV_RADIUS) return lambertPos1(_x);
         if (_x <= LAMBERT_POS2_MAXVAL) return lambertPos2(_x);
         if (_x <= LAMBERT_POS3_MAXVAL) return lambertPos3(_x);

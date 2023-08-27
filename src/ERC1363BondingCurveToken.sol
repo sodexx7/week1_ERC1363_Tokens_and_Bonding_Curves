@@ -110,7 +110,7 @@ contract ERC1363BondingCurveToken is Initializable,Ownable, ERC1363, BancorFormu
      * 
      * @dev Implemet the function onTransferReceived in  IERC1363Receiver, when received the ERC1363token,It wiill mint the bondingCurve token
      */
-     function onTransferReceived(address spender, address sender, uint256 depositAmount, bytes calldata data)
+     function onTransferReceived(address /**spender**/, address sender, uint256 depositAmount, bytes calldata /**data**/)
         external
         returns (bytes4)
     {
