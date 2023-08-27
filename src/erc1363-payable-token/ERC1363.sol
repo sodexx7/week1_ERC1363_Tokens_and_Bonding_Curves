@@ -47,6 +47,7 @@ abstract contract ERC1363 is ERC20, IERC1363, ERC165 {
         transfer(to, amount);
         require(_checkOnTransferReceived(_msgSender(), to, amount, data), "ERC1363: receiver returned wrong data");
         return true;
+        
     }
 
     /**

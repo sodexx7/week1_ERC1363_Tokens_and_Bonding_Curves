@@ -13,7 +13,4 @@ contract ERC1363Token is ERC1363 {
         _mint(msg.sender, 10_000 * 10 ** decimals());
     }
 
-    function approveAndCall(address spender, uint256 amount) public override returns (bool) {
-        return super.approveAndCall(spender, amount);
-    }
 }

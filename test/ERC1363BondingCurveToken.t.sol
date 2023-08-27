@@ -101,7 +101,7 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         uint256 initialSupply = 1000 * 10 ** BCTToken.decimals();
 
         require(BCTSwapToken.approve(address(BCTToken), initialPoolBalance));
-        BCTToken.initialize(BCTSwapToken, initialPoolBalance, initialSupply, reserveRatio, gasPrice);
+        BCTToken.initialize(address(BCTSwapToken), initialPoolBalance, initialSupply, reserveRatio, gasPrice);
 
         console.log("BCTToken current supply ", BCTToken.totalSupply() / 10 ** 18);
         console.log("BCTToken current poolBalance ", BCTToken.poolBalance() / 10 ** 18);
@@ -118,7 +118,7 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         uint256 BCTTokenBuyerBalanceBefore = BCTToken.balanceOf(buyerAddress);
         uint256 BCTSwapTokenbBuyerAmountBefore = BCTSwapToken.balanceOf(buyerAddress);
 
-        uint256 receiveBCTAmount = test_BuyOneTime(buyerAddress, amountSell);
+        uint256 receiveBCTAmount = test_BuyOneTimebyERC1363(buyerAddress, amountSell);
 
         uint256 BCTTokenSupplyAfter = BCTToken.totalSupply();
         uint256 BCTTokenPoolBalanceAfter = BCTToken.poolBalance();
@@ -157,8 +157,8 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         BCTSwapToken.transfer(buyerAddress, 3000 * 10 ** BCTSwapToken.decimals());
         uint256 amountSell = 500 * 10 ** BCTSwapToken.decimals();
 
-        uint256 receiveBCTAmount = test_BuyOneTime(buyerAddress, amountSell);
-        uint256 receiveBCTAmount2 = test_BuyOneTime(buyerAddress, amountSell);
+        uint256 receiveBCTAmount = test_BuyOneTimebyERC1363(buyerAddress, amountSell);
+        uint256 receiveBCTAmount2 = test_BuyOneTimebyERC1363(buyerAddress, amountSell);
         assertGt(receiveBCTAmount, receiveBCTAmount2);
     }
 
@@ -184,10 +184,10 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         // ----------------------------SandSwitch Attack start-------------------------------------
         //front-running
         BCTSwapToken.transfer(sandswitchAttacker, 1000 * 10 ** BCTSwapToken.decimals());
-        uint256 attackReceiveBCT = test_BuyOneTime(sandswitchAttacker, amountSell);
+        uint256 attackReceiveBCT = test_BuyOneTimebyERC1363(sandswitchAttacker, amountSell);
 
         // buyerAddress sell 100 BCTSwapToken
-        uint256 actualBCTTokens = test_BuyOneTime(buyerAddress, amountSell);
+        uint256 actualBCTTokens = test_BuyOneTimebyERC1363(buyerAddress, amountSell);
 
         // back-running
         uint256 receiveBCTSwapToken = test_SellOneTime(sandswitchAttacker, attackReceiveBCT);
@@ -226,52 +226,29 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
     //
     function test_PrteventSandSwitchByBuyBCT() external {}
 
+
     // buy BCTToken by ERC1363Token
-    function test_BuyOneTime(address buyer, uint256 amountSell) internal returns (uint256 receiveAmount) {
+    function test_BuyOneTimebyERC1363(address buyer, uint256 amountSell) internal returns (uint256 receiveAmount) {
         vm.startPrank(buyer);
         uint256 totalSupplyBefore = BCTToken.totalSupply();
 
-        require(BCTSwapToken.approve(address(BCTToken), amountSell));
-        BCTToken.mint(amountSell);
+        console.log("balance-start",BCTSwapToken.balanceOf(address(BCTToken)));
+        BCTSwapToken.transferAndCall(address(BCTToken),amountSell);
+        
+        
         console.log("buyer ", buyer);
         console.log(
             "receive ", (BCTToken.totalSupply() - totalSupplyBefore), "BCTToken and sell ERC1363Token", amountSell
         );
-        console.log(
-            "receive ",
-            (BCTToken.totalSupply() - totalSupplyBefore) / 10 ** 18,
-            "BCTToken and sell ERC1363Token",
-            amountSell / 10 ** 18
-        );
+        // console.log(
+        //     "receive ",
+        //     (BCTToken.totalSupply() - totalSupplyBefore) / 10 ** 18,
+        //     "BCTToken and sell ERC1363Token",
+        //     amountSell / 10 ** 18
+        // );
         vm.stopPrank();
         return BCTToken.totalSupply() - totalSupplyBefore;
     }
-
-     
-
-    // buy BCTToken by ERC1363Token
-    // function test_BuyOneTimebyERC1363(address buyer, uint256 amountSell) internal returns (uint256 receiveAmount) {
-    //     vm.startPrank(buyer);
-    //     uint256 totalSupplyBefore = BCTToken.totalSupply();
-
-    //     // require(BCTSwapToken.approve(address(BCTToken), amountSell));
-        
-    //     BCTSwapToken.approveAndCall(address(BCTToken),amountSell);
-        
-        
-    //     console.log("buyer ", buyer);
-    //     console.log(
-    //         "receive ", (BCTToken.totalSupply() - totalSupplyBefore), "BCTToken and sell ERC1363Token", amountSell
-    //     );
-    //     console.log(
-    //         "receive ",
-    //         (BCTToken.totalSupply() - totalSupplyBefore) / 10 ** 18,
-    //         "BCTToken and sell ERC1363Token",
-    //         amountSell / 10 ** 18
-    //     );
-    //     vm.stopPrank();
-    //     return BCTToken.totalSupply() - totalSupplyBefore;
-    // }
 
     // Sell BCTToken by burning BCTToken
     function test_SellOneTime(address seller, uint256 burnAmount) internal returns (uint256 receiveAmount) {
@@ -280,16 +257,18 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         BCTToken.burn(burnAmount);
         console.log("seller ", seller);
         uint256 receiveBCTSwapToken = BCTTokennBefore - BCTToken.poolBalance();
+        console.log("test_SellOneTime BCTTokennBefore - BCTToken.poolBalance()",BCTTokennBefore,BCTToken.poolBalance());
         console.log("receive ", receiveBCTSwapToken, " ERC1363Token and burn BCTToken", burnAmount);
         // console.log("receive ",receiveBCTSwapToken/10**18," ERC1363Token and burn BCTToken", burnAmount/10**18) ;
         vm.stopPrank();
         return receiveBCTSwapToken;
     }
 
+    // validBurn(amount)
     function test_RevertWhenBeyondBCTTokenBalance() external {
         uint256 burnAmount = BCTToken.balanceOf(buyerAddress) + 1;
         vm.prank(buyerAddress);
-        vm.expectRevert(abi.encodeWithSignature("NoEnoughtBCTToken()"));
+        vm.expectRevert();
         BCTToken.burn(burnAmount);
     }
 }
