@@ -108,62 +108,9 @@ contract UntrustedEscrowTest is Test {
     }
 }
 
-
 /**
- * tood
- * 1.code adjust
- * 2. coinfo data structure adjust
- * 3. how to test these security issues
- *
+ * the below data structure is  appropriate？
+ * seller_buyer_coinInfo
+ * selllist
  * 
- * doing
- * 
- * security issues
- * 1. arbitrary ERC20
- * 
- * 
- * 1.basic features
- *  basic logic
- * 2.security issues
- *  1)  ERC20 security issues
- *      1: instead of approve(), use safeIncreaseAllowance to avoid the  double-spend an allowance problem
- *      2: safeTransferFrom or safeTransferFrom, which add more check that not return bool.
- *      3. For Reentrant problem, use  RnonReentrant(ReentrancyGuard), and  do the checks_effects_interactions no matter in the deposit or withdraw funciton
- * 
- *  2) Other security issues
- *      1:buy can put an arbitrary ERC20 token, current solidity version > 0.8.0. There are no overflow or underflow.
- *      2. add  Pausable,Ownable. which the owner can pause all the funcitons preventing the unexpected behaviour. 
- *      3: The specifical ERC20 supply mechniasm. the supply is changing according to some conditions. which will leads to the conflict between the UntrustedEscrow's
- *   balance and the corrospending erc20's balance. For now. no better sultion. just ignore. TODO
- *              // specifical ERC20 implementation
- *               // 1:Fee-on-transfer tokens , this mechniasm leads to the actual received amount less than the input amount?
- *               //  shoud consider, It seems make the contract more complex.
- *               // 2: Rebasing tokens
- *               //  automatically decrease or increase based on their mechanism, which leads to eller_buyer_coin[sellerAddress][msg.sender] balance not 
- *               // ERC20(erc20Token).balanceOf(address(this)) can track the balance, but if more buyers send same erc20 tokens???
- *      
- * 
- * 
- * 
- * * possible security issues:
- * 1)business loigc
- * 
- * 
- * 
- * 
- * now doing:
- * 1)basic feature done
- * 1. buy and transfer done
- * 2. seller withdraw only after 3 days. done
- * 3. add modify buyer and sellers  doing
- * 
- *      
- * 4. name beauty
- * 
- *
- * todo
- * 1.test case add test balanceOf funcitons
- * 2. which quesitons should summary?
- * 
- *
  */

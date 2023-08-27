@@ -9,6 +9,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
+
 /**
  *
  * @dev
@@ -22,34 +23,35 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  * 
  *  2) Other security issues
  *      1:buy can put an arbitrary ERC20 token, current solidity version > 0.8.0. There are no overflow or underflow.
- *      2. add  Pausable,Ownable. which the owner can pause all the funcitons preventing the unexpected behaviour. 
+ *      2. add  Pausable,Ownable, which the owner can pause all the funcitons preventing the unexpected behaviour. 
  *      3: The specifical ERC20 supply mechniasm. the supply is changing according to some conditions. which will leads to the conflict between the UntrustedEscrow's
  *   balance and the corrospending erc20's balance. For now. no better sultion. just ignore. TODO
- *              // specifical ERC20 implementation
- *               // 1:Fee-on-transfer tokens , this mechniasm leads to the actual received amount less than the input amount?
- *               //  shoud consider, It seems make the contract more complex.
- *               // 2: Rebasing tokens
- *               //  automatically decrease or increase based on their mechanism, which leads to eller_buyer_coin[sellerAddress][msg.sender] balance not 
- *               // ERC20(erc20Token).balanceOf(address(this)) can track the balance, but if more buyers send same erc20 tokens???
- *      
+ *               1:Fee-on-transfer tokens , this mechniasm leads to the actual received amount less than the input amount?
+ *                   shoud consider, It seems make the contract more complex.
+ *               2: Rebasing tokens
+ *              automatically decrease or increase based on their mechanism, which leads to eller_buyer_coin[sellerAddress][msg.sender] balance not 
  * 
- *
+ *  
  */
-contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
+contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable {
+
     using SafeERC20 for ERC20;
+    
+    /**
+     * @dev when an buyer deposit arbitrary ERC20 token, shoud store the ERC20 token address, and the corrospending amount, and the depositTimestamp.
+     */
     struct CoinInfo {
         address erc20;
         uint256 balance;
         uint256 depositTimestamp;
     }
 
-    uint256 private depositTimestamp;
 
     // seller=>buyer=>ConInfo 
-    mapping(address => mapping(address => CoinInfo)) seller_buyer_coinInfo;
+    mapping(address => mapping(address => CoinInfo)) private seller_buyer_coinInfo;
 
-    // check selllist is exsit
-    mapping(address => bool) selllist;
+    // check seller is exsit
+    mapping(address => bool) private sellList;
 
 
     event Deposit(address indexed buyer, address indexed seller, address indexed erc20Token, uint256 amount);
@@ -60,23 +62,23 @@ contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
     error BeyondTime();
    
 
-     modifier validSeller(address seller) {
-        require(selllist[seller],"invalid seller address");
+    modifier validSeller(address seller) {
+        require(sellList[seller],"invalid seller address");
         _;
     }
 
+
     /**
-     * deposit arbitrary ERC20 to this address
      * @param erc20Token which token to deposit
-     * @param amount how much
-     * @param sellerAddress the related seller
+     * @param amount how much erc20Token to deposit
+     * @param sellerAddress who can withdraw the deposit
      */
     function deposit(address erc20Token, uint256 amount, address sellerAddress) external {
         require(sellerAddress != address(0), "sellerAddress is the zero address");
         require(amount > 0, "deposit value should great than 0");
         
         CoinInfo memory coinInfo;
-        if(selllist[sellerAddress]){
+        if(sellList[sellerAddress]){
 
             coinInfo = seller_buyer_coinInfo[sellerAddress][msg.sender]; 
             coinInfo.depositTimestamp = block.timestamp;
@@ -85,7 +87,7 @@ contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
         } else{
             
             coinInfo =  CoinInfo(erc20Token,amount,block.timestamp);
-            selllist[sellerAddress] = true;
+            sellList[sellerAddress] = true;
         }
         seller_buyer_coinInfo[sellerAddress][msg.sender] = coinInfo;
         
@@ -95,6 +97,9 @@ contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
         emit Deposit(msg.sender, sellerAddress, erc20Token, amount);
     }
 
+    /**
+     * @param buyer the caller can withdraw whose deposit
+     */
     function withdraw(address buyer) external validSeller(msg.sender) nonReentrant() {
 
         require(
@@ -119,80 +124,15 @@ contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
         );
     }
 
-    function pause() public onlyOwner {
+    function pause() external onlyOwner {
         _pause();
     }
 
-    function unpause() public onlyOwner {
+    function unpause() external onlyOwner {
         _unpause();
     }
 
-    function escrowCoinInfo(address seller, address buyer) public view returns (CoinInfo memory) {
+    function escrowCoinInfo(address seller, address buyer) external view returns (CoinInfo memory) {
         return seller_buyer_coinInfo[seller][buyer];
     }
 }
-
-/**
- * Create a contract where a buyer can put an arbitrary ERC20 token into a contract and a seller can withdraw it 3 days later.
- *  Based on your readings above, what issues do you need to defend against? Create the safest version of this that you can while guarding against issues that you cannot control.
- */
-
-/**
- * tood
- * 1.code adjust
- * 2. coinfo data structure adjust
- * 3. how to test these security issues
- *
- * 
- * doing
- * 
- * security issues
- * 1. arbitrary ERC20
- * 
- * 
- * 1.basic features
- *  basic logic
- * 2.security issues
- *  1)  ERC20 security issues
- *      1: instead of approve(), use safeIncreaseAllowance to avoid the  double-spend an allowance problem
- *      2: safeTransferFrom or safeTransferFrom, which add more check that not return bool.
- *      3. For Reentrant problem, use  RnonReentrant(ReentrancyGuard), and  do the checks_effects_interactions no matter in the deposit or withdraw funciton
- * 
- *  2) Other security issues
- *      1:buy can put an arbitrary ERC20 token, current solidity version > 0.8.0. There are no overflow or underflow.
- *      2. add  Pausable,Ownable. which the owner can pause all the funcitons preventing the unexpected behaviour. 
- *      3: The specifical ERC20 supply mechniasm. the supply is changing according to some conditions. which will leads to the conflict between the UntrustedEscrow's
- *   balance and the corrospending erc20's balance. For now. no better sultion. just ignore. TODO
- *              // specifical ERC20 implementation
- *               // 1:Fee-on-transfer tokens , this mechniasm leads to the actual received amount less than the input amount?
- *               //  shoud consider, It seems make the contract more complex.
- *               // 2: Rebasing tokens
- *               //  automatically decrease or increase based on their mechanism, which leads to eller_buyer_coin[sellerAddress][msg.sender] balance not 
- *               // ERC20(erc20Token).balanceOf(address(this)) can track the balance, but if more buyers send same erc20 tokens???
- *      
- * 
- * 
- * 
- * * possible security issues:
- * 1)business loigc
- * 
- * 
- * 
- * 
- * 
- * now doing:
- * 1)basic feature done
- * 1. buy and transfer done
- * 2. seller withdraw only after 3 days. done
- * 3. add modify buyer and sellers  doing
- * 
- *      
- * 4. name beauty
- * 
- *
- * todo
- * 1.test case add test balanceOf funcitons
- * 2. which quesitons should summary?
- * 
- *
- */

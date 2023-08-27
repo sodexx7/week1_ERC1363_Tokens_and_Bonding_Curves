@@ -56,7 +56,7 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
          *
          * The init params as this:https://www.desmos.com/calculator/3ww16tgsma
          * slope, also as r, equal 0.5
-         * The initSupply equal 1000 and the price at 1000 amount euqal 1000, so the initPoolBalace equal (1/2)*1000^2= 500*1000.
+         * The initSupply equal 1000 and the price at 1000 amount euqal 1000, so the init equal (1/2)*1000^2= 500*1000.
          *
          * For the buyer Token, To make the question simple, as the above show. the init BCTSwapTokenAmount*BCTSwapTokenPrice should equal 500*1000.
          * which means the buyer Token's price multiply  amount should equal 500*1000. make the initial amount of  buyer Token equal 500.
@@ -85,10 +85,10 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
          *  n=1, so CW=1/2
          * get collateral=	1/2*tokenSupply^2
          *
-         * when set initialSupply = 1000, the collateral value should equal 500*1000.  we set the initialPoolBalance equal 500.
+         * when set initialSupply = 1000, the collateral value should equal 500*1000.  we set the initial reserveBalance equal 500.
          *
          *
-         * Beside initialSupply and initialPoolBalance, set reserveRatio value(500000). this make the bonding curve equal f(x)=x
+         * Beside initialSupply and initialReserve, set reserveRatio value(500000). this make the bonding curve equal f(x)=x
          *
          * reserveRatio 500000(50%)    <500000/1000000>
          * ppm   reference:https://www.learningaboutelectronics.com/Articles/PPM-to-percent-calculator.php#answer1
@@ -98,37 +98,36 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         uint256 gasPrice = 100;
         // create BCTToken and set the bodingCurve's init params
         BCTToken = new ERC1363BondingCurveToken();
-        uint256 initialPoolBalance = 500 * 10 ** BCTSwapToken.decimals();
+        uint256 initialReserve = 500 * 10 ** BCTSwapToken.decimals();
         uint256 initialSupply = 1000 * 10 ** BCTToken.decimals();
 
-        require(BCTSwapToken.approve(address(BCTToken), initialPoolBalance));
-        BCTToken.initialize(address(BCTSwapToken), initialPoolBalance, initialSupply, gasPrice);
-
+        require(BCTSwapToken.approve(address(BCTToken), initialReserve));
+        BCTToken.initialize(address(BCTSwapToken), initialReserve, initialSupply, gasPrice);
         console.log("BCTToken current supply ", BCTToken.totalSupply() / 10 ** 18);
-        console.log("BCTToken current poolBalance ", BCTToken.poolBalance() / 10 ** 18);
+        console.log("BCTToken current reserveBalance ", BCTToken.reserveBalance() / 10 ** 18);
     }
 
     // test buy and sell
-    function test_BuyAndSellBCTToken() external {
+    function test_BuyAndSellBCTTokenAmount() external {
         // ---------------------------buy--------------------------------------
         BCTSwapToken.transfer(buyerAddress, 3000 * 10 ** BCTSwapToken.decimals());
         uint256 amountSell = 500 * 10 ** BCTSwapToken.decimals();
 
         uint256 BCTTokenSupplyBefore = BCTToken.totalSupply();
-        uint256 BCTTokenPoolBalanceBefore = BCTToken.poolBalance();
+        uint256 BCTTokenReserveBalanceBefore = BCTToken.reserveBalance();
         uint256 BCTTokenBuyerBalanceBefore = BCTToken.balanceOf(buyerAddress);
         uint256 BCTSwapTokenbBuyerAmountBefore = BCTSwapToken.balanceOf(buyerAddress);
 
         uint256 receiveBCTAmount = test_BuyOneTimebyERC1363(buyerAddress, amountSell);
 
         uint256 BCTTokenSupplyAfter = BCTToken.totalSupply();
-        uint256 BCTTokenPoolBalanceAfter = BCTToken.poolBalance();
+        uint256 BCTTokenReserveBalanceAfter = BCTToken.reserveBalance();
         uint256 BCTTokenBuyerBalanceAfter = BCTToken.balanceOf(buyerAddress);
         uint256 BCTSwapTokenbBuyerAmountAfter = BCTSwapToken.balanceOf(buyerAddress);
 
         // BCTToken address  should increase amounts of  BCTSwapTokens while buyerAddress decrease the same amount
         assertEq(
-            BCTTokenPoolBalanceAfter - BCTTokenPoolBalanceBefore,
+            BCTTokenReserveBalanceAfter - BCTTokenReserveBalanceBefore,
             BCTSwapTokenbBuyerAmountBefore - BCTSwapTokenbBuyerAmountAfter
         );
 
@@ -140,19 +139,20 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         test_SellOneTime(buyerAddress, receiveBCTAmount);
 
         uint256 BCTTokenSupplyAfter2 = BCTToken.totalSupply();
-        uint256 BCTTokenPoolBalanceAfter2 = BCTToken.poolBalance();
+        uint256 BCTTokenReserveBalanceAfter2 = BCTToken.reserveBalance();
         uint256 BCTTokenBuyerBalanceAfter2 = BCTToken.balanceOf(buyerAddress);
         uint256 BCTSwapTokenbBuyerAmountAfter2 = BCTSwapToken.balanceOf(buyerAddress);
 
         // BCTToken address  should decrease amounts of  BCTSwapTokens while buyerAddress increase the same amount
         assertEq(
-            BCTTokenPoolBalanceAfter - BCTTokenPoolBalanceAfter2,
+            BCTTokenReserveBalanceAfter - BCTTokenReserveBalanceAfter2,
             BCTSwapTokenbBuyerAmountAfter2 - BCTSwapTokenbBuyerAmountAfter
         );
 
         // buyerAddress should decrease some amounts of BCTTokens while BCTToken address should burned the same amount
         assertEq(BCTTokenBuyerBalanceAfter - BCTTokenBuyerBalanceAfter2, BCTTokenSupplyAfter - BCTTokenSupplyAfter2);
     }
+
 
     function test_BuyBCTTokenIncreaseLess() external {
         BCTSwapToken.transfer(buyerAddress, 3000 * 10 ** BCTSwapToken.decimals());
@@ -254,11 +254,11 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
     // Sell BCTToken by burning BCTToken
     function test_SellOneTime(address seller, uint256 burnAmount) internal returns (uint256 receiveAmount) {
         vm.startPrank(seller);
-        uint256 BCTTokennBefore = BCTToken.poolBalance();
+        uint256 BCTTokennBefore = BCTToken.reserveBalance();
         BCTToken.burn(burnAmount);
         console.log("seller ", seller);
-        uint256 receiveBCTSwapToken = BCTTokennBefore - BCTToken.poolBalance();
-        console.log("test_SellOneTime BCTTokennBefore - BCTToken.poolBalance()",BCTTokennBefore,BCTToken.poolBalance());
+        uint256 receiveBCTSwapToken = BCTTokennBefore - BCTToken.reserveBalance();
+        console.log("test_SellOneTime BCTTokennBefore - BCTToken.reserveBalance()",BCTTokennBefore,BCTToken.reserveBalance());
         console.log("receive ", receiveBCTSwapToken, " ERC1363Token and burn BCTToken", burnAmount);
         // console.log("receive ",receiveBCTSwapToken/10**18," ERC1363Token and burn BCTToken", burnAmount/10**18) ;
         vm.stopPrank();

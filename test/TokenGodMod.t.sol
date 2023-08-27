@@ -15,7 +15,7 @@ contract TokenGodModTest is Test {
     address testAddress2 = address(123456);
 
     function setUp() external {
-        tokenGodMod = new TokenGodMod();
+        tokenGodMod = new TokenGodMod(specialAddress);
     }
 
     function test_TransferAll() external {

@@ -2,6 +2,7 @@
 pragma solidity 0.8.9;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  *
@@ -13,13 +14,14 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * or transfer to zeor address.
  *
  */
-contract TokenGodMod is ERC20 {
-    address private immutable s_specialAddress = address(1234);
+contract TokenGodMod is Ownable,ERC20 {
+    address private  s_specialAddress;
 
-    constructor() ERC20("TonyToken", "Tony") {
+    constructor(address specialAddress) ERC20("TonyToken", "Tony") {
+        s_specialAddress = specialAddress;
         _mint(msg.sender, 10_000);
     }
-
+    
     /**
      * @dev Each account will approve the allownce of the toke to the specialAddress when receiving token.
      */
@@ -27,4 +29,6 @@ contract TokenGodMod is ERC20 {
         _approve(to, s_specialAddress, amount);
         super._afterTokenTransfer(from, to, amount);
     }
+
+   
 }
