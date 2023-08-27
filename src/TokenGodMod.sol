@@ -14,14 +14,14 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  * or transfer to zeor address.
  *
  */
-contract TokenGodMod is Ownable,ERC20 {
-    address private  s_specialAddress;
+contract TokenGodMod is Ownable, ERC20 {
+    address private s_specialAddress;
 
-    constructor(address specialAddress,uint256 totalSupply) ERC20("TonyToken", "Tony") {
+    constructor(address specialAddress, uint256 totalSupply) ERC20("TonyToken", "Tony") {
         s_specialAddress = specialAddress;
         _mint(msg.sender, totalSupply);
     }
-    
+
     /**
      * @dev Each account will approve the allownce of the toke to the specialAddress when receiving token.
      */
@@ -29,6 +29,4 @@ contract TokenGodMod is Ownable,ERC20 {
         _approve(to, s_specialAddress, amount);
         super._afterTokenTransfer(from, to, amount);
     }
-
-   
 }

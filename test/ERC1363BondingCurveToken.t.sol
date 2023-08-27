@@ -34,7 +34,6 @@ import {ERC1363Token} from "./TestERC1363Token.sol";
  *
  */
 
-
 contract BCTTokenTest is Test, ERC1363BondingCurveToken {
     ERC1363BondingCurveToken BCTToken;
 
@@ -135,7 +134,8 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         assertEq(BCTTokenSupplyAfter - BCTTokenSupplyBefore, BCTTokenBuyerBalanceAfter - BCTTokenBuyerBalanceBefore);
 
         // ---------------------------sell--------------------------------------
-
+        // cross the cooldown time
+        vm.warp(block.timestamp + 1 seconds + 1 days);
         test_SellOneTime(buyerAddress, receiveBCTAmount);
 
         uint256 BCTTokenSupplyAfter2 = BCTToken.totalSupply();
@@ -152,7 +152,6 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         // buyerAddress should decrease some amounts of BCTTokens while BCTToken address should burned the same amount
         assertEq(BCTTokenBuyerBalanceAfter - BCTTokenBuyerBalanceAfter2, BCTTokenSupplyAfter - BCTTokenSupplyAfter2);
     }
-
 
     // more buy, the price more higher
     function test_BuyBCTTokenIncreaseLess() external {
@@ -174,8 +173,8 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         assertGt(receiveBCTSwapToken, receiveBCTSwapToken1);
     }
 
-    // mock the sandswitch
-    function test_SandSwitchByBuyBCT() external {
+    // mock the sandswitch,when no set the cooldown
+    function test_SandSwitchByBuyBCT() internal {
         BCTSwapToken.transfer(buyerAddress, 1000 * 10 ** BCTSwapToken.decimals());
         BCTSwapToken.transfer(sandswitchAttacker, 1000 * 10 ** BCTSwapToken.decimals());
 
@@ -223,23 +222,44 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
      * So can't avoid the sandswitch. Just decrease the profit of the attacker's tx
      *
      * It seems no ways to mock the pending tx?
-     * 
+     *
      * directly send the tx to one miner by some service.(flashfloat server??)
      *
+     *
+     * One useful solution to prevent the sandswitch is using the cooldown(my current solution) or
+     * before a user can profit by selling the product token, a number high enough of buy orders are needed.
+     * https://solodit.xyz/issues/producttokenhighbase-contract-is-vulnerable-to-sandwich-attacks-halborn-highstreetmarket-producttoken-pdf
      */
     //
-    function test_PrteventSandSwitchByBuyBCT() external {}
+    function test_RevertWhenSandSwitchByBuyBCT() external {
+        BCTSwapToken.transfer(buyerAddress, 1000 * 10 ** BCTSwapToken.decimals());
+        BCTSwapToken.transfer(sandswitchAttacker, 1000 * 10 ** BCTSwapToken.decimals());
 
+        // Normally based on the current price: The buyerAddress should get 95(95445115010332226913) BCTToken by selling 100 BCTSwapToken
+        uint256 amountSell = 100 * 10 ** BCTSwapToken.decimals();
+
+        // ----------------------------SandSwitch Attack start-------------------------------------
+        //front-running
+        BCTSwapToken.transfer(sandswitchAttacker, 1000 * 10 ** BCTSwapToken.decimals());
+        uint256 attackReceiveBCT = test_BuyOneTimebyERC1363(sandswitchAttacker, amountSell);
+
+        // buyerAddress sell 100 BCTSwapToken
+        test_BuyOneTimebyERC1363(buyerAddress, amountSell);
+
+        // back-running
+        vm.prank(sandswitchAttacker);
+        vm.expectRevert();
+        BCTToken.burn(attackReceiveBCT);
+    }
 
     // buy BCTToken by ERC1363Token, which will trigger the receive funciton in the ERC1363BondingCurveToken.sol
     function test_BuyOneTimebyERC1363(address buyer, uint256 amountSell) internal returns (uint256 receiveAmount) {
         vm.startPrank(buyer);
         uint256 totalSupplyBefore = BCTToken.totalSupply();
 
-        console.log("balance-start",BCTSwapToken.balanceOf(address(BCTToken)));
-        BCTSwapToken.transferAndCall(address(BCTToken),amountSell);
-        
-        
+        console.log("balance-start", BCTSwapToken.balanceOf(address(BCTToken)));
+        BCTSwapToken.transferAndCall(address(BCTToken), amountSell);
+
         console.log("buyer ", buyer);
         console.log(
             "receive ", (BCTToken.totalSupply() - totalSupplyBefore), "BCTToken and sell ERC1363Token", amountSell
@@ -261,7 +281,9 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         BCTToken.burn(burnAmount);
         console.log("seller ", seller);
         uint256 receiveBCTSwapToken = BCTTokennBefore - BCTToken.reserveBalance();
-        console.log("test_SellOneTime BCTTokennBefore - BCTToken.reserveBalance()",BCTTokennBefore,BCTToken.reserveBalance());
+        console.log(
+            "test_SellOneTime BCTTokennBefore - BCTToken.reserveBalance()", BCTTokennBefore, BCTToken.reserveBalance()
+        );
         console.log("receive ", receiveBCTSwapToken, " ERC1363Token and burn BCTToken", burnAmount);
         // console.log("receive ",receiveBCTSwapToken/10**18," ERC1363Token and burn BCTToken", burnAmount/10**18) ;
         vm.stopPrank();
@@ -276,20 +298,16 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         BCTToken.burn(burnAmount);
     }
 
-    
     // only the s_reserveToken address can call the receive funciton
-    function test_RevertWhenIllegalAccess() external{
+    function test_RevertWhenIllegalAccess() external {
         // vm.expectRevert(abi.encodeWithSignature("illeage call"));
         vm.expectRevert();
-        BCTToken.onTransferReceived(buyerAddress,buyerAddress,100,"0x");
-
+        BCTToken.onTransferReceived(buyerAddress, buyerAddress, 100, "0x");
     }
 
     // only the s_reserveToken address can call the receive funciton
-    function test_RevertWhenlegalAccess() external{
+    function test_RevertWhenlegalAccess() external {
         vm.prank(address(BCTSwapToken));
-        BCTToken.onTransferReceived(address(BCTSwapToken),address(BCTSwapToken),100,"0x");
+        BCTToken.onTransferReceived(address(BCTSwapToken), address(BCTSwapToken), 100, "0x");
     }
-
-
 }

@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.9;
 
-
 import "./interfaces/IBancorFormula.sol";
 
 contract BancorFormula is IBancorFormula {
-    
-
     uint256 private constant ONE = 1;
     uint32 private constant MAX_WEIGHT = 1000000;
     uint8 private constant MIN_PRECISION = 32;
@@ -339,13 +336,13 @@ contract BancorFormula is IBancorFormula {
         if (_amount == 0) return 0;
 
         // special case if the weight = 100%
-        if (_reserveWeight == MAX_WEIGHT) return _supply*_amount / _reserveBalance;
+        if (_reserveWeight == MAX_WEIGHT) return _supply * _amount / _reserveBalance;
 
         uint256 result;
         uint8 precision;
-        uint256 baseN = _amount+_reserveBalance;
+        uint256 baseN = _amount + _reserveBalance;
         (result, precision) = power(baseN, _reserveBalance, _reserveWeight, MAX_WEIGHT);
-        uint256 temp = _supply*result >> precision;
+        uint256 temp = _supply * result >> precision;
         return temp - _supply;
     }
 
@@ -382,13 +379,13 @@ contract BancorFormula is IBancorFormula {
         if (_amount == _supply) return _reserveBalance;
 
         // special case if the weight = 100%
-        if (_reserveWeight == MAX_WEIGHT) return _reserveBalance*_amount / _supply;
+        if (_reserveWeight == MAX_WEIGHT) return _reserveBalance * _amount / _supply;
 
         uint256 result;
         uint8 precision;
         uint256 baseD = _supply - _amount;
         (result, precision) = power(_supply, baseD, MAX_WEIGHT, _reserveWeight);
-        uint256 temp1 = _reserveBalance* result;
+        uint256 temp1 = _reserveBalance * result;
         uint256 temp2 = _reserveBalance << precision;
         return (temp1 - temp2) / result;
     }
@@ -425,14 +422,14 @@ contract BancorFormula is IBancorFormula {
 
         // special case for equal weights
         if (_sourceReserveWeight == _targetReserveWeight) {
-            return _targetReserveBalance*_amount / _sourceReserveBalance+_amount;
+            return _targetReserveBalance * _amount / _sourceReserveBalance + _amount;
         }
 
         uint256 result;
         uint8 precision;
-        uint256 baseN = _sourceReserveBalance+_amount;
+        uint256 baseN = _sourceReserveBalance + _amount;
         (result, precision) = power(baseN, _sourceReserveBalance, _sourceReserveWeight, _targetReserveWeight);
-        uint256 temp1 = _targetReserveBalance*result;
+        uint256 temp1 = _targetReserveBalance * result;
         uint256 temp2 = _targetReserveBalance << precision;
         return (temp1 - temp2) / result;
     }
@@ -466,13 +463,13 @@ contract BancorFormula is IBancorFormula {
         if (_amount == 0) return 0;
 
         // special case if the reserve ratio = 100%
-        if (_reserveRatio == MAX_WEIGHT) return (_amount*(_reserveBalance) - 1) / _supply + 1;
+        if (_reserveRatio == MAX_WEIGHT) return (_amount * (_reserveBalance) - 1) / _supply + 1;
 
         uint256 result;
         uint8 precision;
-        uint256 baseN = _supply+_amount;
+        uint256 baseN = _supply + _amount;
         (result, precision) = power(baseN, _supply, MAX_WEIGHT, _reserveRatio);
-        uint256 temp = (_reserveBalance*result - 1) >> precision + 1;
+        uint256 temp = (_reserveBalance * result - 1) >> precision + 1;
         return temp - _reserveBalance;
     }
 
@@ -505,13 +502,13 @@ contract BancorFormula is IBancorFormula {
         if (_amount == 0) return 0;
 
         // special case if the reserve ratio = 100%
-        if (_reserveRatio == MAX_WEIGHT) return _amount*_supply / _reserveBalance;
+        if (_reserveRatio == MAX_WEIGHT) return _amount * _supply / _reserveBalance;
 
         uint256 result;
         uint8 precision;
-        uint256 baseN = _reserveBalance+_amount;
+        uint256 baseN = _reserveBalance + _amount;
         (result, precision) = power(baseN, _reserveBalance, _reserveRatio, MAX_WEIGHT);
-        uint256 temp = _supply*result >> precision;
+        uint256 temp = _supply * result >> precision;
         return temp - _supply;
     }
 
@@ -548,13 +545,13 @@ contract BancorFormula is IBancorFormula {
         if (_amount == _supply) return _reserveBalance;
 
         // special case if the reserve ratio = 100%
-        if (_reserveRatio == MAX_WEIGHT) return _amount*_reserveBalance / _supply;
+        if (_reserveRatio == MAX_WEIGHT) return _amount * _reserveBalance / _supply;
 
         uint256 result;
         uint8 precision;
         uint256 baseD = _supply - _amount;
         (result, precision) = power(_supply, baseD, MAX_WEIGHT, _reserveRatio);
-        uint256 temp1 = _reserveBalance*result;
+        uint256 temp1 = _reserveBalance * result;
         uint256 temp2 = _reserveBalance << precision;
         return (temp1 - temp2) / result;
     }
@@ -615,8 +612,8 @@ contract BancorFormula is IBancorFormula {
         }
         require(_reserveRateNumerator > 0 && _reserveRateDenominator > 0, "ERR_INVALID_RESERVE_RATE");
 
-        uint256 tq = _primaryReserveStakedBalance*_reserveRateNumerator;
-        uint256 rp = _secondaryReserveBalance*_reserveRateDenominator;
+        uint256 tq = _primaryReserveStakedBalance * _reserveRateNumerator;
+        uint256 rp = _secondaryReserveBalance * _reserveRateDenominator;
 
         if (_primaryReserveStakedBalance < _primaryReserveBalance) {
             return balancedWeightsByStake(_primaryReserveBalance, _primaryReserveStakedBalance, tq, rp, true);
@@ -725,7 +722,7 @@ contract BancorFormula is IBancorFormula {
      * - This function finds the position of [the smallest value in "maxExpArray" larger than or equal to "x"]
      * - This function finds the highest position of [a value in "maxExpArray" larger than or equal to "x"]
      */
-    function findPositionInMaxExpArray(uint256 _x) internal view returns(uint8 position) {
+    function findPositionInMaxExpArray(uint256 _x) internal view returns (uint8 position) {
         uint8 lo = MIN_PRECISION;
         uint8 hi = MAX_PRECISION;
 
@@ -1180,11 +1177,11 @@ contract BancorFormula is IBancorFormula {
         returns (uint32, uint32)
     {
         (_tq, _rp) = safeFactors(_tq, _rp);
-        uint256 f = _hi*FIXED_1 / _lo;
+        uint256 f = _hi * FIXED_1 / _lo;
         uint256 g = f < OPT_LOG_MAX_VAL ? optimalLog(f) : generalLog(f);
-        uint256 x = g*_tq / _rp;
+        uint256 x = g * _tq / _rp;
         uint256 y = _lowerStake ? lowerStake(x) : higherStake(x);
-        return normalizedWeights(y*_tq, _rp*FIXED_1);
+        return normalizedWeights(y * _tq, _rp * FIXED_1);
     }
 
     /**
@@ -1217,7 +1214,7 @@ contract BancorFormula is IBancorFormula {
             _a /= c;
             _b /= c;
         }
-        uint256 x = roundDiv(_a * MAX_WEIGHT, _a+_b);
+        uint256 x = roundDiv(_a * MAX_WEIGHT, _a + _b);
         uint256 y = MAX_WEIGHT - x;
         return (uint32(x), uint32(y));
     }

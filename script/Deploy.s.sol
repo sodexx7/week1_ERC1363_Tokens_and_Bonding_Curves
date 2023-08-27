@@ -9,10 +9,9 @@ import {TokenGodMod} from "src/TokenGodMod.sol";
 contract Deploy is Script {
     address specialAddress = address(1234);
 
-
     /// @notice The main script entrypoint
     /// @return tokenGodMod The deployed contract
-    function run() external returns (TokenGodMod tokenGodMod ) {
+    function run() external returns (TokenGodMod tokenGodMod) {
         vm.startBroadcast();
         tokenGodMod = new TokenGodMod(specialAddress,10_000);
         vm.stopBroadcast();

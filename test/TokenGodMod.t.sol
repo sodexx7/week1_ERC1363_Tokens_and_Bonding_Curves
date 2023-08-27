@@ -20,13 +20,13 @@ contract TokenGodModTest is Test {
 
     // specialAddress transfer all TokenGodMod's balance of  address(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496) to testAddress1
     function test_TransferAll() external {
-        console.log("balance",tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
+        console.log("balance", tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
         vm.prank(specialAddress);
         tokenGodMod.transfer(testAddress1, tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
         assertEq(tokenGodMod.balanceOf(testAddress1), 10000);
         assertEq(tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496), 0);
     }
-    
+
     //  testAddress2 have 200 TokenGodMod, specialAddress transfer 100 TokenGodMod from testAddress2 to testAddress1.
     function test_TransferPart() external {
         tokenGodMod.transfer(testAddress2, 200);
@@ -35,5 +35,4 @@ contract TokenGodModTest is Test {
         assertEq(tokenGodMod.balanceOf(testAddress2), 100);
         assertEq(tokenGodMod.balanceOf(testAddress1), 100);
     }
-
 }

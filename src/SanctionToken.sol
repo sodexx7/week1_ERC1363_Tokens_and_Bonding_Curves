@@ -19,7 +19,7 @@ contract SanctionToken is ERC20, Ownable {
     error AddressCannotSend();
     error AddressCannotReceive();
 
-    constructor(uint256 _initSupply,string memory _name,string memory _symbol) ERC20(_name, _symbol) {
+    constructor(uint256 _initSupply, string memory _name, string memory _symbol) ERC20(_name, _symbol) {
         _mint(msg.sender, _initSupply);
     }
 
@@ -37,9 +37,9 @@ contract SanctionToken is ERC20, Ownable {
 
     /**
      * @dev Apply the hook(_beforeTokenTransfer),which has effects on transfer token, mint, burn. For mint and
-     * burn, should add one check to make sure the specifical address can't as the `to`(zero address) address while 
-     * minting or can't as the `from`(zero address)  address while buring.  
-     * 
+     * burn, should add one check to make sure the specifical address can't as the `to`(zero address) address while
+     * minting or can't as the `from`(zero address)  address while buring.
+     *
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         if (s_bannedAddresses[from]) {

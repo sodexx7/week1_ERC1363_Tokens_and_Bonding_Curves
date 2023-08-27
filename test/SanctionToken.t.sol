@@ -8,7 +8,6 @@ import "forge-std/console.sol";
 
 import {SanctionToken} from "src/SanctionToken.sol";
 
-
 contract SanctionTokenTest is Test {
     SanctionToken sanctionToken;
 
@@ -18,7 +17,6 @@ contract SanctionTokenTest is Test {
 
     function setUp() external {
         sanctionToken = new SanctionToken(10_000,"SanctionToken","ST");
-        
     }
 
     function testManageBannedAddress() external {
@@ -27,14 +25,14 @@ contract SanctionTokenTest is Test {
 
     function testNormalReceive() external {
         sanctionToken.transfer(validAddress, 10);
-        assertEq(sanctionToken.balanceOf(validAddress),10);
+        assertEq(sanctionToken.balanceOf(validAddress), 10);
     }
 
     function testNormalTransfer() external {
         sanctionToken.transfer(validAddress, 10);
         vm.prank(validAddress);
         sanctionToken.transfer(validAddress2, 10);
-        assertEq(sanctionToken.balanceOf(validAddress2),10);
+        assertEq(sanctionToken.balanceOf(validAddress2), 10);
     }
 
     function testRevert_Receive() external {

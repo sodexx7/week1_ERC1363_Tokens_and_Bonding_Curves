@@ -13,6 +13,7 @@ import "forge-std/console.sol";
 
 contract UntrustedEscrowTest is Test {
     using SafeERC20 for ERC20;
+
     UntrustedEscrow untrustedEscrow;
     TestERC20 testERC20;
 
@@ -26,107 +27,95 @@ contract UntrustedEscrowTest is Test {
     function setUp() external {
         untrustedEscrow = new UntrustedEscrow();
         testERC20 = new TestERC20();
-        
     }
 
     // one buyer deposit and the corrospending seller can withdraw the realted balance after 3 days
     function test_DepositAndWithDraw() external {
-        uint256 depositAmount = 100*10**testERC20.decimals();
-        
-        
-        testERC20.transfer(testAddress_buyer1,depositAmount);
+        uint256 depositAmount = 100 * 10 ** testERC20.decimals();
+
+        testERC20.transfer(testAddress_buyer1, depositAmount);
 
         // buyer,seller address
-        test_deposit(testAddress_seller1,address(testERC20),depositAmount);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,depositAmount);
+        test_deposit(testAddress_seller1, address(testERC20), depositAmount);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, depositAmount);
 
-        // two place check balance of testERC20  
-        // 1:testERC20 check balance of testERC20  
+        // two place check balance of testERC20
+        // 1:testERC20 check balance of testERC20
         // 2: UntrustedEscrow keep track of the info
-        console.log("untrustedEscrow-balance",testERC20.balanceOf(address(untrustedEscrow)));
+        console.log("untrustedEscrow-balance", testERC20.balanceOf(address(untrustedEscrow)));
 
-        
-        
         // modity blocktimestamp
-        vm.warp(block.timestamp+1 + 3 days);
-        test_withdraw(testAddress_buyer1,testAddress_seller1);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,0);
+        vm.warp(block.timestamp + 1 seconds + 3 days);
+        test_withdraw(testAddress_buyer1, testAddress_seller1);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, 0);
     }
 
     // one buyer deposit more times and the corresponding seller can withdraw all balance
-     function test_DepositMoreTimesAndWithDraw() external {
-        uint256 depositAmount = 100*10**testERC20.decimals();
-        
-        
-        testERC20.transfer(testAddress_buyer1,depositAmount);
+    function test_DepositMoreTimesAndWithDraw() external {
+        uint256 depositAmount = 100 * 10 ** testERC20.decimals();
+
+        testERC20.transfer(testAddress_buyer1, depositAmount);
 
         // buyer,seller address
-        test_deposit(testAddress_seller1,address(testERC20),depositAmount/2);
-        test_deposit(testAddress_seller1,address(testERC20),depositAmount/2);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,depositAmount);
+        test_deposit(testAddress_seller1, address(testERC20), depositAmount / 2);
+        test_deposit(testAddress_seller1, address(testERC20), depositAmount / 2);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, depositAmount);
 
+        console.log("untrustedEscrow-balance", testERC20.balanceOf(address(untrustedEscrow)));
 
-        console.log("untrustedEscrow-balance",testERC20.balanceOf(address(untrustedEscrow)));
-
-        
         // modity blocktimestamp
-        vm.warp(block.timestamp+1 + 3 days);
-        test_withdraw(testAddress_buyer1,testAddress_seller1);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,0);
+        vm.warp(block.timestamp + 1 + 3 days);
+        test_withdraw(testAddress_buyer1, testAddress_seller1);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, 0);
     }
 
-     function test_WithDrawRevertIfSellerInValid()  external {
-        uint256 depositAmount = 100*10**testERC20.decimals();
-        testERC20.transfer(testAddress_buyer1,depositAmount);
-        
+    function test_WithDrawRevertIfSellerInValid() external {
+        uint256 depositAmount = 100 * 10 ** testERC20.decimals();
+        testERC20.transfer(testAddress_buyer1, depositAmount);
 
-        test_deposit(testAddress_seller1,address(testERC20),depositAmount);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,depositAmount);
+        test_deposit(testAddress_seller1, address(testERC20), depositAmount);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, depositAmount);
 
-      
         // modity blocktimestamp
-        vm.warp(block.timestamp+1 + 3 days);
+        vm.warp(block.timestamp + 1 + 3 days);
         vm.expectRevert(); // invalid seller address
-        test_withdraw(testAddress_buyer1,testAddress_seller2);
-        
+        test_withdraw(testAddress_buyer1, testAddress_seller2);
     }
 
-      function test_WithDrawRevertBeyondTime() external {
-        uint256 depositAmount = 100*10**testERC20.decimals();
-        testERC20.transfer(testAddress_buyer1,depositAmount);
-        
+    function test_WithDrawRevertBeyondTime() external {
+        uint256 depositAmount = 100 * 10 ** testERC20.decimals();
+        testERC20.transfer(testAddress_buyer1, depositAmount);
 
-        test_deposit(testAddress_seller1,address(testERC20),depositAmount);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,depositAmount);
+        test_deposit(testAddress_seller1, address(testERC20), depositAmount);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, depositAmount);
 
         // modity blocktimestamp
         vm.expectRevert();
-        test_withdraw(testAddress_buyer1,testAddress_seller2);
-        
+        test_withdraw(testAddress_buyer1, testAddress_seller2);
     }
 
-    function test_deposit(address sellerAddress,address erc20Address,uint256 depositAmount)  internal {
+    function test_deposit(address sellerAddress, address erc20Address, uint256 depositAmount) internal {
         vm.startPrank(testAddress_buyer1);
         // instead of approve(), use the below funtion to avoid the  double-spend an allowance problem
-        ERC20(erc20Address).safeIncreaseAllowance(address(untrustedEscrow),depositAmount);
+        ERC20(erc20Address).safeIncreaseAllowance(address(untrustedEscrow), depositAmount);
 
-        untrustedEscrow.deposit(address(erc20Address),depositAmount,sellerAddress);
-        console.log("buyer:",testAddress_buyer1,"the corrospending seller:",sellerAddress);
-        console.log("deposit ERC20 coin",address(testERC20),depositAmount/10**ERC20(erc20Address).decimals(),"amount");
+        untrustedEscrow.deposit(address(erc20Address), depositAmount, sellerAddress);
+        console.log("buyer:", testAddress_buyer1, "the corrospending seller:", sellerAddress);
+        console.log(
+            "deposit ERC20 coin", address(testERC20), depositAmount / 10 ** ERC20(erc20Address).decimals(), "amount"
+        );
         vm.stopPrank();
     }
 
-
-    function test_withdraw(address buyerAddress,address sellerAddress)  internal {
+    function test_withdraw(address buyerAddress, address sellerAddress) internal {
         vm.startPrank(sellerAddress);
 
         untrustedEscrow.withdraw(buyerAddress);
-        console.log("seller :",sellerAddress,"the corrospending buyer:",testAddress_buyer1);
+        console.log("seller :", sellerAddress, "the corrospending buyer:", testAddress_buyer1);
 
-        UntrustedEscrow.CoinInfo memory coinInfo = untrustedEscrow.escrowCoinInfo(sellerAddress,buyerAddress);
-        console.log("witherdraw ERC20 coin",coinInfo.erc20,"amount:",coinInfo.balance);
+        UntrustedEscrow.CoinInfo memory coinInfo = untrustedEscrow.escrowCoinInfo(sellerAddress, buyerAddress);
+        console.log("witherdraw ERC20 coin", coinInfo.erc20, "amount:", coinInfo.balance);
         vm.stopPrank();
-        
     }
 }
 
@@ -134,5 +123,5 @@ contract UntrustedEscrowTest is Test {
  * the below data structure is  appropriate？
  * seller_buyer_coinInfo
  * selllist
- * 
+ *
  */
