@@ -8,11 +8,12 @@
 3. src/TonyToken.sol (Token with sanctions)     
 4. src/TokenGodMod.sol (Token with god mode)
 5. src/ERC1363BondingCurveToken.sol  (Token sale and buyback with bonding curve)   
-6. src/UntrustedEscrow.sol  (Untrusted escrow.)
+6. src/UntrustedEscrow.sol  (Untrusted escrow)
 
-```txt
+```
 src
 ├─ ERC1363BondingCurveToken.sol
+├── └─BancorFormula.sol
 ├─ TokenGodMod.sol
 ├─ TonyToken.sol
 ├─ UntrustedEscrow.sol
@@ -21,6 +22,8 @@ test
 ├─TokenGodMod.t.sol
 ├─TonyToken.t.sol
 └─UntrustedEscrow.t.sol
+
+md files
 └─ERC777_ERC1363.md
 └─SafeERC20.md
 ```

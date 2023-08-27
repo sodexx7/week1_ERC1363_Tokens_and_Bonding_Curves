@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity 0.8.9;
 
 import "forge-std/Test.sol";
 import "forge-std/Vm.sol";
 import "forge-std/console.sol";
 import {ERC1363BondingCurveToken} from "src/ERC1363BondingCurveToken.sol";
-import {ERC1363Token} from "src/ERC1363Token.sol";
+import {ERC1363Token} from "./TestERC1363Token.sol";
 
 /**
  * @notice
@@ -33,6 +33,8 @@ import {ERC1363Token} from "src/ERC1363Token.sol";
  *  1414213562373095048801 BCTToken => 499999999999999999999 ERC1363Token. The missing: 1/10**18.
  *
  */
+
+
 contract BCTTokenTest is Test, ERC1363BondingCurveToken {
     ERC1363BondingCurveToken BCTToken;
 
@@ -40,7 +42,7 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
 
     address private sandswitchAttacker = address(2);
 
-    ERC1363Token BCTSwapToken;
+    ERC1363Token private BCTSwapToken;
 
     function setUp() external {
         // Create the ERC1363 token, which can buy BCTToken. The default supply is 10_000
@@ -92,7 +94,6 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
          * ppm   reference:https://www.learningaboutelectronics.com/Articles/PPM-to-percent-calculator.php#answer1
          */
 
-        uint32 reserveRatio = 500000;
         // involved with the sandswitch
         uint256 gasPrice = 100;
         // create BCTToken and set the bodingCurve's init params
@@ -101,7 +102,7 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         uint256 initialSupply = 1000 * 10 ** BCTToken.decimals();
 
         require(BCTSwapToken.approve(address(BCTToken), initialPoolBalance));
-        BCTToken.initialize(address(BCTSwapToken), initialPoolBalance, initialSupply, reserveRatio, gasPrice);
+        BCTToken.initialize(address(BCTSwapToken), initialPoolBalance, initialSupply, gasPrice);
 
         console.log("BCTToken current supply ", BCTToken.totalSupply() / 10 ** 18);
         console.log("BCTToken current poolBalance ", BCTToken.poolBalance() / 10 ** 18);

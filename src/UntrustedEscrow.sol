@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity 0.8.9;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  *
@@ -37,13 +37,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  */
 contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
     using SafeERC20 for ERC20;
-
-    error NoValiableBalance();
-    error BeyondTime();
-
-    event Deposit(address indexed buyer, address indexed seller, address indexed erc20Token, uint256 amount);
-    event Withdraw(address indexed seller, address indexed buyer, address indexed erc20Token, uint256 amount);
-
     struct CoinInfo {
         address erc20;
         uint256 balance;
@@ -55,8 +48,17 @@ contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
     // seller=>buyer=>ConInfo 
     mapping(address => mapping(address => CoinInfo)) seller_buyer_coinInfo;
 
-    // check selllist is exsit?
+    // check selllist is exsit
     mapping(address => bool) selllist;
+
+
+    event Deposit(address indexed buyer, address indexed seller, address indexed erc20Token, uint256 amount);
+    event Withdraw(address indexed seller, address indexed buyer, address indexed erc20Token, uint256 amount);
+
+
+    error NoValiableBalance();
+    error BeyondTime();
+   
 
      modifier validSeller(address seller) {
         require(selllist[seller],"invalid seller address");
@@ -69,7 +71,7 @@ contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
      * @param amount how much
      * @param sellerAddress the related seller
      */
-    function deposit(address erc20Token, uint256 amount, address sellerAddress) public {
+    function deposit(address erc20Token, uint256 amount, address sellerAddress) external {
         require(sellerAddress != address(0), "sellerAddress is the zero address");
         require(amount > 0, "deposit value should great than 0");
         
@@ -93,11 +95,7 @@ contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
         emit Deposit(msg.sender, sellerAddress, erc20Token, amount);
     }
 
-    function escrowCoinInfo(address seller, address buyer) public view returns (CoinInfo memory) {
-        return seller_buyer_coinInfo[seller][buyer];
-    }
-
-    function withdraw(address buyer) public validSeller(msg.sender) nonReentrant() {
+    function withdraw(address buyer) external validSeller(msg.sender) nonReentrant() {
 
         require(
             block.timestamp - seller_buyer_coinInfo[msg.sender][buyer].depositTimestamp > 3 days,
@@ -127,6 +125,10 @@ contract UntrustedEscrow is ReentrancyGuard,Pausable,Ownable  {
 
     function unpause() public onlyOwner {
         _unpause();
+    }
+
+    function escrowCoinInfo(address seller, address buyer) public view returns (CoinInfo memory) {
+        return seller_buyer_coinInfo[seller][buyer];
     }
 }
 
