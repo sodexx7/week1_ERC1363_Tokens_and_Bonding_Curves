@@ -24,9 +24,6 @@ contract SanctionTokenTest is Test {
     function testManageBannedAddress() external {
         sanctionToken.manageBannedAddress(bannedAddress, true);
     }
-    // function testManageBannedAddressEvent() external {
-    //     sanctionToken.manageBannedAddress(bannedAddress, true);
-    // }
 
     function testNormalReceive() external {
         sanctionToken.transfer(validAddress, 10);

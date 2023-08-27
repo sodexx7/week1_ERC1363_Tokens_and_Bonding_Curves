@@ -5,7 +5,7 @@
 1. Transfer() and TransferFrom() functions in ERC20 only return a boolean value, which can't deal with situations including revert a tx or to check the return value is correct.
 
 2. double-spend an allowance. 
-    If someone sets the allowance mistakenly and resets the allowance, the malicious guy can get all allowance while monitoring the mempool.
+    If someone sets the allowance mistakenly and make an second tx resetting the allowance,  the malicious guy can get the first allowance by doing a first-run before the first tx while monitoring the mempool. So the malicious can get all the allowances including first and second allowance.
  
 
 When used?

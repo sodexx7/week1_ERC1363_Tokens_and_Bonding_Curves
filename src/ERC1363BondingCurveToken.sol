@@ -114,7 +114,7 @@ contract ERC1363BondingCurveToken is Initializable,Ownable, ERC1363, BancorFormu
         external
         returns (bytes4)
     {
-        require(msg.sender==address(s_reserveToken),"illeage call ");
+        require(msg.sender==address(s_reserveToken),"illeage call");
 
         _curvedMintFor(sender, depositAmount);// do more check??? TODO
         return IERC1363Receiver.onTransferReceived.selector;

@@ -58,10 +58,10 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
          * slope, also as r, equal 0.5
          * The initSupply equal 1000 and the price at 1000 amount euqal 1000, so the init equal (1/2)*1000^2= 500*1000.
          *
-         * For the buyer Token, To make the question simple, as the above show. the init BCTSwapTokenAmount*BCTSwapTokenPrice should equal 500*1000.
+         * For the buyer Token, To make the question simple, as the above show. the initBCTSwapTokenAmount*BCTSwapTokenPrice should equal 500*1000.
          * which means the buyer Token's price multiply  amount should equal 500*1000. make the initial amount of  buyer Token equal 500.
          *
-         * As all these done, The current bonding curve is f(x)=x, f(x) equal the current price. and the init value for x euqal 1000.
+         * As all these done, The current bonding curve is f(x)=x, f(x) equal the current price. and the initial value for x euqal 1000.
          * x means the BCTToken supply.
          * f(x) means the corrrospending price, which can convert into the ERC1363Token amount:1/2(1000^2)/1000
          * That can be show in the https://www.desmos.com/calculator/3ww16tgsma.
@@ -154,6 +154,7 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
     }
 
 
+    // more buy, the price more higher
     function test_BuyBCTTokenIncreaseLess() external {
         BCTSwapToken.transfer(buyerAddress, 3000 * 10 ** BCTSwapToken.decimals());
         uint256 amountSell = 500 * 10 ** BCTSwapToken.decimals();
@@ -163,6 +164,7 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         assertGt(receiveBCTAmount, receiveBCTAmount2);
     }
 
+    // more seller, the price more cheaper
     function test_SellBCTTokenIncreaseMore() external {
         BCTToken.transfer(buyerAddress, 300 * 10 ** BCTToken.decimals());
         uint256 amountSell = 100 * 10 ** BCTToken.decimals();
@@ -172,6 +174,7 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         assertGt(receiveBCTSwapToken, receiveBCTSwapToken1);
     }
 
+    // mock the sandswitch
     function test_SandSwitchByBuyBCT() external {
         BCTSwapToken.transfer(buyerAddress, 1000 * 10 ** BCTSwapToken.decimals());
         BCTSwapToken.transfer(sandswitchAttacker, 1000 * 10 ** BCTSwapToken.decimals());
@@ -228,7 +231,7 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
     function test_PrteventSandSwitchByBuyBCT() external {}
 
 
-    // buy BCTToken by ERC1363Token
+    // buy BCTToken by ERC1363Token, which will trigger the receive funciton in the ERC1363BondingCurveToken.sol
     function test_BuyOneTimebyERC1363(address buyer, uint256 amountSell) internal returns (uint256 receiveAmount) {
         vm.startPrank(buyer);
         uint256 totalSupplyBefore = BCTToken.totalSupply();
@@ -265,11 +268,28 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
         return receiveBCTSwapToken;
     }
 
-    // validBurn(amount)
+    // check the seller whether or not have enough BCTToken
     function test_RevertWhenBeyondBCTTokenBalance() external {
         uint256 burnAmount = BCTToken.balanceOf(buyerAddress) + 1;
         vm.prank(buyerAddress);
         vm.expectRevert();
         BCTToken.burn(burnAmount);
     }
+
+    
+    // only the s_reserveToken address can call the receive funciton
+    function test_RevertWhenIllegalAccess() external{
+        // vm.expectRevert(abi.encodeWithSignature("illeage call"));
+        vm.expectRevert();
+        BCTToken.onTransferReceived(buyerAddress,buyerAddress,100,"0x");
+
+    }
+
+    // only the s_reserveToken address can call the receive funciton
+    function test_RevertWhenlegalAccess() external{
+        vm.prank(address(BCTSwapToken));
+        BCTToken.onTransferReceived(address(BCTSwapToken),address(BCTSwapToken),100,"0x");
+    }
+
+
 }

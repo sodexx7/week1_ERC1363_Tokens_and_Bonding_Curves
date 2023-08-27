@@ -27,3 +27,10 @@ md files
 └─ERC777_ERC1363.md
 └─SafeERC20.md
 ```
+
+
+#### todo
+1. vm.expectRevert  shows the specific reason
+2. event test 
+3. use more test features of foundry: Fuzz Testing, Invariant Testing
+4. how to test some security issues

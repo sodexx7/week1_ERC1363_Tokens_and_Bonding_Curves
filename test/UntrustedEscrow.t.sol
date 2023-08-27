@@ -16,9 +16,9 @@ contract UntrustedEscrowTest is Test {
     UntrustedEscrow untrustedEscrow;
     TestERC20 testERC20;
 
-    address testAddress1 = address(1);
+    address testAddress_buyer1 = address(1);
     address testAddress_seller1 = address(11);
-    address testAddress2 = address(2);
+    address testAddress_buyer2 = address(2);
     address testAddress_seller2 = address(21);
 
     address testAddress_seller3 = address(31);
@@ -34,72 +34,94 @@ contract UntrustedEscrowTest is Test {
         uint256 depositAmount = 100*10**testERC20.decimals();
         
         
-        testERC20.transfer(testAddress1,depositAmount);
+        testERC20.transfer(testAddress_buyer1,depositAmount);
 
         // buyer,seller address
-
         test_deposit(testAddress_seller1,address(testERC20),depositAmount);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress1).balance,depositAmount);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,depositAmount);
 
-
-        // two place check balance of testERC20  for: UntrustedEscrow. 
-        // 1:testERC20 check balance of testERC20  for: UntrustedEscrow
+        // two place check balance of testERC20  
+        // 1:testERC20 check balance of testERC20  
+        // 2: UntrustedEscrow keep track of the info
         console.log("untrustedEscrow-balance",testERC20.balanceOf(address(untrustedEscrow)));
 
-        // 2: UntrustedEscrow keep track of the info
+        
         
         // modity blocktimestamp
         vm.warp(block.timestamp+1 + 3 days);
-        test_withdraw(testAddress1,testAddress_seller1);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress1).balance,0);
+        test_withdraw(testAddress_buyer1,testAddress_seller1);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,0);
+    }
+
+    // one buyer deposit more times and the corresponding seller can withdraw all balance
+     function test_DepositMoreTimesAndWithDraw() external {
+        uint256 depositAmount = 100*10**testERC20.decimals();
+        
+        
+        testERC20.transfer(testAddress_buyer1,depositAmount);
+
+        // buyer,seller address
+        test_deposit(testAddress_seller1,address(testERC20),depositAmount/2);
+        test_deposit(testAddress_seller1,address(testERC20),depositAmount/2);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,depositAmount);
+
+
+        console.log("untrustedEscrow-balance",testERC20.balanceOf(address(untrustedEscrow)));
+
+        
+        // modity blocktimestamp
+        vm.warp(block.timestamp+1 + 3 days);
+        test_withdraw(testAddress_buyer1,testAddress_seller1);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,0);
     }
 
      function test_WithDrawRevertIfSellerInValid()  external {
         uint256 depositAmount = 100*10**testERC20.decimals();
-        testERC20.transfer(testAddress1,depositAmount);
+        testERC20.transfer(testAddress_buyer1,depositAmount);
         
 
         test_deposit(testAddress_seller1,address(testERC20),depositAmount);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress1).balance,depositAmount);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,depositAmount);
 
       
         // modity blocktimestamp
         vm.warp(block.timestamp+1 + 3 days);
         vm.expectRevert(); // invalid seller address
-        test_withdraw(testAddress1,testAddress_seller2);
+        test_withdraw(testAddress_buyer1,testAddress_seller2);
         
     }
 
       function test_WithDrawRevertBeyondTime() external {
         uint256 depositAmount = 100*10**testERC20.decimals();
-        testERC20.transfer(testAddress1,depositAmount);
+        testERC20.transfer(testAddress_buyer1,depositAmount);
         
 
         test_deposit(testAddress_seller1,address(testERC20),depositAmount);
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress1).balance,depositAmount);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1,testAddress_buyer1).balance,depositAmount);
 
         // modity blocktimestamp
         vm.expectRevert();
-        test_withdraw(testAddress1,testAddress_seller2);
+        test_withdraw(testAddress_buyer1,testAddress_seller2);
         
     }
 
     function test_deposit(address sellerAddress,address erc20Address,uint256 depositAmount)  internal {
-        vm.startPrank(testAddress1);
+        vm.startPrank(testAddress_buyer1);
         // instead of approve(), use the below funtion to avoid the  double-spend an allowance problem
         ERC20(erc20Address).safeIncreaseAllowance(address(untrustedEscrow),depositAmount);
 
         untrustedEscrow.deposit(address(erc20Address),depositAmount,sellerAddress);
-        console.log("buyer:",testAddress1,"the corrospending seller:",sellerAddress);
+        console.log("buyer:",testAddress_buyer1,"the corrospending seller:",sellerAddress);
         console.log("deposit ERC20 coin",address(testERC20),depositAmount/10**ERC20(erc20Address).decimals(),"amount");
         vm.stopPrank();
     }
+
 
     function test_withdraw(address buyerAddress,address sellerAddress)  internal {
         vm.startPrank(sellerAddress);
 
         untrustedEscrow.withdraw(buyerAddress);
-        console.log("seller :",sellerAddress,"the corrospending buyer:",testAddress1);
+        console.log("seller :",sellerAddress,"the corrospending buyer:",testAddress_buyer1);
 
         UntrustedEscrow.CoinInfo memory coinInfo = untrustedEscrow.escrowCoinInfo(sellerAddress,buyerAddress);
         console.log("witherdraw ERC20 coin",coinInfo.erc20,"amount:",coinInfo.balance);

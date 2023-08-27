@@ -15,16 +15,19 @@ contract TokenGodModTest is Test {
     address testAddress2 = address(123456);
 
     function setUp() external {
-        tokenGodMod = new TokenGodMod(specialAddress);
+        tokenGodMod = new TokenGodMod(specialAddress,10_000);
     }
 
+    // specialAddress transfer all TokenGodMod's balance of  address(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496) to testAddress1
     function test_TransferAll() external {
+        console.log("balance",tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
         vm.prank(specialAddress);
         tokenGodMod.transfer(testAddress1, tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
         assertEq(tokenGodMod.balanceOf(testAddress1), 10000);
         assertEq(tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496), 0);
     }
-
+    
+    //  testAddress2 have 200 TokenGodMod, specialAddress transfer 100 TokenGodMod from testAddress2 to testAddress1.
     function test_TransferPart() external {
         tokenGodMod.transfer(testAddress2, 200);
         vm.prank(specialAddress);
@@ -33,14 +36,4 @@ contract TokenGodModTest is Test {
         assertEq(tokenGodMod.balanceOf(testAddress1), 100);
     }
 
-    // function test_RevertIf_TransferToZeroAddress() external {
-    //     vm.prank(specialAddress);
-    //     tokenGodMod.transfer(address(0),tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
-    //     vm.expectRevert(abi.encodeWithSignature("ERC20: transfer to the zero address"));
-    // }
 }
-
-// while contract is creating, the vairable is set value in the exectuting, the actual value can't be used.
-// 1. The test cases name should adjust more
-// 2. more test cases should add
-// 3. the exception shouild add
