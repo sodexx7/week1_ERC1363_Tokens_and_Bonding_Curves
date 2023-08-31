@@ -45,10 +45,10 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
     }
 
     // seller=>buyer=>ConInfo
-    mapping(address => mapping(address => CoinInfo)) private seller_buyer_coinInfo;
+    mapping(address => mapping(address => CoinInfo)) private _seller_buyer_coinInfo;
 
     // check seller is exsit
-    mapping(address => bool) private sellList;
+    mapping(address => bool) private _sellList;
 
     event Deposit(address indexed buyer, address indexed seller, address indexed erc20Token, uint256 amount);
     event Withdraw(address indexed seller, address indexed buyer, address indexed erc20Token, uint256 amount);
@@ -57,7 +57,7 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
     error BeyondTime();
 
     modifier validSeller(address seller) {
-        require(sellList[seller], "invalid seller address");
+        require(_sellList[seller], "invalid seller address");
         _;
     }
 
@@ -71,19 +71,28 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
         require(amount > 0, "deposit value should great than 0");
 
         CoinInfo memory coinInfo;
-        if (sellList[sellerAddress]) {
-            coinInfo = seller_buyer_coinInfo[sellerAddress][msg.sender];
+        if (_sellList[sellerAddress]) {
+            coinInfo = _seller_buyer_coinInfo[sellerAddress][msg.sender];
             coinInfo.depositTimestamp = block.timestamp;
             coinInfo.balance = coinInfo.balance + amount;
         } else {
             coinInfo = CoinInfo(erc20Token, amount, block.timestamp);
-            sellList[sellerAddress] = true;
+            _sellList[sellerAddress] = true;
         }
-        seller_buyer_coinInfo[sellerAddress][msg.sender] = coinInfo;
 
+        _seller_buyer_coinInfo[sellerAddress][msg.sender] = coinInfo;
+
+        uint256 transferBefore = ERC20(erc20Token).balanceOf(address(this));
         ERC20(erc20Token).safeTransferFrom(msg.sender, address(this), amount);
+        uint256 transferAfter = ERC20(erc20Token).balanceOf(address(this));
+        uint256 transferValue = transferAfter - transferBefore;
+        require(transferValue > 0, "actual deposit value should great than 0");
 
-        emit Deposit(msg.sender, sellerAddress, erc20Token, amount);
+        if (transferValue < amount) {
+            _seller_buyer_coinInfo[sellerAddress][msg.sender].balance = transferValue;
+        }
+
+        emit Deposit(msg.sender, sellerAddress, erc20Token, transferValue);
     }
 
     /**
@@ -91,15 +100,15 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
      */
     function withdraw(address buyer) external validSeller(msg.sender) nonReentrant {
         require(
-            block.timestamp - seller_buyer_coinInfo[msg.sender][buyer].depositTimestamp > 3 days,
+            block.timestamp - _seller_buyer_coinInfo[msg.sender][buyer].depositTimestamp > 3 days,
             "Should withdraw after 3 days"
         );
 
-        CoinInfo memory coinInfo = seller_buyer_coinInfo[msg.sender][buyer];
+        CoinInfo memory coinInfo = _seller_buyer_coinInfo[msg.sender][buyer];
 
         require(coinInfo.balance > 0, "No Enough Balance");
 
-        delete seller_buyer_coinInfo[msg.sender][buyer];
+        delete _seller_buyer_coinInfo[msg.sender][buyer];
 
         // seller can withdraw which buyer's which erc20 balance
         ERC20(coinInfo.erc20).safeTransfer(msg.sender, coinInfo.balance);
@@ -107,8 +116,8 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
         emit Withdraw(
             msg.sender,
             buyer,
-            seller_buyer_coinInfo[msg.sender][buyer].erc20,
-            seller_buyer_coinInfo[msg.sender][buyer].balance
+            _seller_buyer_coinInfo[msg.sender][buyer].erc20,
+            _seller_buyer_coinInfo[msg.sender][buyer].balance
         );
     }
 
@@ -121,6 +130,6 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
     }
 
     function escrowCoinInfo(address seller, address buyer) external view returns (CoinInfo memory) {
-        return seller_buyer_coinInfo[seller][buyer];
+        return _seller_buyer_coinInfo[seller][buyer];
     }
 }

@@ -46,13 +46,10 @@ contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorForm
     uint32 private immutable RESERVE_RATION = 500_000;
 
     // prevent the sandSwitch, more explanation can see test_PrteventSandSwitchByBuyBCT in ERC1363BondingCurveToken.t.sol
-    uint256 private s_gasPriceInWei; // maximum gas price for bancor transactions
+    uint256 private _gasPriceInWei; // maximum gas price for bancor transactions
 
     /* Reserve Token */
-    ERC1363 private s_reserveToken;
-
-    // last time of a user bought the BCTToken
-    mapping(address => uint256) s_lastBuyBCTTime;
+    ERC1363 private _reserveToken;
 
     /**
      *
@@ -60,31 +57,31 @@ contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorForm
      * @param mintAmount how many bondingCurve Token will be minted
      * @param depositAmount how many reserveToken  will be deposited
      */
-    event CurvedMint(address sender, uint256 mintAmount, uint256 depositAmount);
+    event CurvedMint(address indexed sender, uint256 indexed mintAmount, uint256 depositAmount);
     /**
      *
      * @param sender the seller
      * @param burnAmount how many bondingCurve Token will be sell
      * @param redeemAmount how many reserveToken will be send to the bondingCurve contract
      */
-    event CurvedBurn(address sender, uint256 burnAmount, uint256 redeemAmount);
+    event CurvedBurn(address indexed sender, uint256 indexed burnAmount, uint256 redeemAmount);
 
     // prevent sandswtich, when one sells BCTToken, shouldn't beyond the time that he bought the BCTToken last time.
     error SellerBeyondCoolDownTime(address seller, uint256 lastBuyTime);
 
     // verifies that the gas price is lower than the universal limit
     modifier validGasPrice() {
-        assert(tx.gasprice <= s_gasPriceInWei);
+        require(tx.gasprice <= _gasPriceInWei, "Below the required gas price");
         _;
     }
 
     modifier validEnoughBCT(uint256 burnAmount) {
-        require(burnAmount > 0 && balanceOf(msg.sender) >= burnAmount);
+        require(burnAmount > 0 && balanceOf(msg.sender) >= burnAmount, "No enough BCTTtoken to burn");
         _;
     }
 
     modifier validMint(uint256 depositAmount) {
-        require(depositAmount > 0);
+        require(depositAmount > 0, "Should transfer enough reserveToken");
         _;
     }
 
@@ -92,24 +89,23 @@ contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorForm
 
     /**
      *
-     * @param _reserveToken:This token and the minted token as the bondingCurve pair
-     * @param _initialreserveBalance: the init balance of the reserveToken
-     * @param _initialSupply: the init supply of the bondingCurve Token
-     * @param _gasPrice  maximum gas price for bancor transactions
+     * @param reserveToken:This token and the minted token as the bondingCurve pair
+     * @param initialreserveBalance: the init balance of the reserveToken
+     * @param initialSupply: the init supply of the bondingCurve Token
+     * @param gasPrice  maximum gas price for bancor transactions
      * @dev  This funciton config the necessary params for the bondingCurve. should execute only one time
      *
      */
-    function initialize(
-        address _reserveToken,
-        uint256 _initialreserveBalance,
-        uint256 _initialSupply,
-        uint256 _gasPrice
-    ) external onlyOwner initializer {
-        s_reserveToken = ERC1363(_reserveToken);
-        s_gasPriceInWei = _gasPrice;
-        _mint(msg.sender, _initialSupply);
+    function initialize(address reserveToken, uint256 initialreserveBalance, uint256 initialSupply, uint256 gasPrice)
+        external
+        onlyOwner
+        initializer
+    {
+        _reserveToken = ERC1363(reserveToken);
+        _gasPriceInWei = gasPrice;
+        _mint(msg.sender, initialSupply);
         require(
-            s_reserveToken.transferFrom(msg.sender, address(this), _initialreserveBalance),
+            _reserveToken.transferFrom(msg.sender, address(this), initialreserveBalance),
             "ERC163BondingToken: Failed to transfer tokens for intial pool."
         );
     }
@@ -133,7 +129,7 @@ contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorForm
         external
         returns (bytes4)
     {
-        require(msg.sender == address(s_reserveToken), "illeage call");
+        require(msg.sender == address(_reserveToken), "illeage call");
 
         _curvedMintFor(sender, depositAmount); // do more check??? TODO
 
@@ -146,22 +142,18 @@ contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorForm
      */
     function _setGasPrice(uint256 _gasPrice) external onlyOwner {
         require(_gasPrice > 0);
-        s_gasPriceInWei = _gasPrice;
+        _gasPriceInWei = _gasPrice;
     }
 
     /**
      * @dev Burn tokens
      * @param burnAmount Amount of bodingCurve tokens to burn
      *
-     * @notice if s_lastBuyBCTTime[msg.sender] is zero, perhaps other people send the seller BCTToken. just ignore.
+     * @notice if _lastBuyBCTTime[msg.sender] is zero, perhaps other people send the seller BCTToken. just ignore.
      */
     function burn(uint256 burnAmount) external validGasPrice validEnoughBCT(burnAmount) {
-        if (s_lastBuyBCTTime[msg.sender] != 0 && block.timestamp - s_lastBuyBCTTime[msg.sender] < 1 days) {
-            revert SellerBeyondCoolDownTime(msg.sender, s_lastBuyBCTTime[msg.sender]);
-        }
-
         uint256 redeemAmount = _curvedBurnFor(msg.sender, burnAmount);
-        s_reserveToken.transfer(msg.sender, redeemAmount);
+        _reserveToken.transfer(msg.sender, redeemAmount);
     }
 
     /**
@@ -181,7 +173,7 @@ contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorForm
     }
 
     function reserveBalance() public view returns (uint256) {
-        return s_reserveToken.balanceOf(address(this));
+        return _reserveToken.balanceOf(address(this));
     }
 
     function _curvedMintFor(address user, uint256 depositAmount)
@@ -192,8 +184,6 @@ contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorForm
     {
         uint256 mintAmount = calculateCurvedMintReturn(depositAmount);
         _mint(user, mintAmount);
-
-        s_lastBuyBCTTime[user] = block.timestamp;
 
         emit CurvedMint(user, mintAmount, depositAmount);
         return mintAmount;

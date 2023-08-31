@@ -6,7 +6,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import "forge-std/Test.sol";
 
 import {UntrustedEscrow} from "src/UntrustedEscrow.sol";
-import {TestERC20} from "./TestERC20.sol";
+import {TestERC20, TestERC20WithFees} from "./TestERC20.sol";
 
 import "forge-std/Vm.sol";
 import "forge-std/console.sol";
@@ -16,6 +16,7 @@ contract UntrustedEscrowTest is Test {
 
     UntrustedEscrow untrustedEscrow;
     TestERC20 testERC20;
+    TestERC20WithFees testERC20WithFees;
 
     address testAddress_buyer1 = address(1);
     address testAddress_seller1 = address(11);
@@ -27,6 +28,7 @@ contract UntrustedEscrowTest is Test {
     function setUp() external {
         untrustedEscrow = new UntrustedEscrow();
         testERC20 = new TestERC20();
+        testERC20WithFees = new TestERC20WithFees();
     }
 
     // one buyer deposit and the corrospending seller can withdraw the realted balance after 3 days
@@ -43,6 +45,31 @@ contract UntrustedEscrowTest is Test {
         // 1:testERC20 check balance of testERC20
         // 2: UntrustedEscrow keep track of the info
         console.log("untrustedEscrow-balance", testERC20.balanceOf(address(untrustedEscrow)));
+
+        // modity blocktimestamp
+        vm.warp(block.timestamp + 1 seconds + 3 days);
+        test_withdraw(testAddress_buyer1, testAddress_seller1);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, 0);
+    }
+
+    function test_DepositAndWithDrawWithFees() external {
+        uint256 depositAmount = 100 * 10 ** testERC20WithFees.decimals();
+
+        testERC20WithFees.transfer(testAddress_buyer1, depositAmount);
+
+        // buyer,seller address
+        test_deposit(testAddress_seller1, address(testERC20WithFees), depositAmount);
+        // should consider the feess, delete 100
+        console.log(
+            "untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance",
+            untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance
+        );
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, depositAmount-100);
+
+        // two place check balance of testERC20
+        // 1:testERC20 check balance of testERC20
+        // 2: UntrustedEscrow keep track of the info
+        // console.log("untrustedEscrow-balance", testERC20WithFees.balanceOf(address(untrustedEscrow)));
 
         // modity blocktimestamp
         vm.warp(block.timestamp + 1 seconds + 3 days);

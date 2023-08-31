@@ -12,15 +12,15 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  */
 contract SanctionToken is ERC20, Ownable {
     // mapping specifical address to be banned or valid
-    mapping(address => bool) private s_bannedAddresses;
+    mapping(address => bool) private _bannedAddresses;
 
     event BannedAddressEvent(address indexed admin, address indexed to, bool isInValid);
 
     error AddressCannotSend();
     error AddressCannotReceive();
 
-    constructor(uint256 _initSupply, string memory _name, string memory _symbol) ERC20(_name, _symbol) {
-        _mint(msg.sender, _initSupply);
+    constructor(uint256 initSupply, string memory name, string memory symbol) ERC20(name, symbol) {
+        _mint(msg.sender, initSupply);
     }
 
     /**
@@ -31,7 +31,7 @@ contract SanctionToken is ERC20, Ownable {
     function manageBannedAddress(address bannedAddress, bool isInValid) external onlyOwner {
         require(bannedAddress != address(0), "can't ban the zero address");
 
-        s_bannedAddresses[bannedAddress] = isInValid;
+        _bannedAddresses[bannedAddress] = isInValid;
         emit BannedAddressEvent(msg.sender, bannedAddress, isInValid);
     }
 
@@ -42,10 +42,10 @@ contract SanctionToken is ERC20, Ownable {
      *
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        if (s_bannedAddresses[from]) {
+        if (_bannedAddresses[from]) {
             revert AddressCannotSend();
         }
-        if (s_bannedAddresses[to]) {
+        if (_bannedAddresses[to]) {
             revert AddressCannotReceive();
         }
         super._beforeTokenTransfer(from, to, amount);

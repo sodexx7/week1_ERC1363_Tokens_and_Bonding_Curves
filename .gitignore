@@ -18,6 +18,7 @@ broadcast
 *.pem
 
 todo.md
+commitFile.md
 src/Greeter.sol
 test/OtherTest.sol
 

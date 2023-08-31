@@ -229,9 +229,12 @@ contract BCTTokenTest is Test, ERC1363BondingCurveToken {
      * One useful solution to prevent the sandswitch is using the cooldown(my current solution) or
      * before a user can profit by selling the product token, a number high enough of buy orders are needed.
      * https://solodit.xyz/issues/producttokenhighbase-contract-is-vulnerable-to-sandwich-attacks-halborn-highstreetmarket-producttoken-pdf
+     *
+     * This test works only used when apply timecool down, the details can see the tag:v1.1.0
      */
+
     //
-    function test_RevertWhenSandSwitchByBuyBCT() external {
+    function test_RevertWhenSandSwitchByBuyBCT() internal {
         BCTSwapToken.transfer(buyerAddress, 1000 * 10 ** BCTSwapToken.decimals());
         BCTSwapToken.transfer(sandswitchAttacker, 1000 * 10 ** BCTSwapToken.decimals());
 
