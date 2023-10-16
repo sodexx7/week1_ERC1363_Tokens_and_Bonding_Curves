@@ -1,0 +1,34 @@
+'solc --version' running
+'solc @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/ @bancorprotocol/converter=lib/contracts-solidity/solidity/contracts/converter @erc1363-payable-token/contracts=lib/erc1363-payable-token/contracts src/SanctionToken.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes,compact-format --allow-paths .,/Volumes/data_1/rareskills/week1_ERC1363_Tokens_and_Bonding_Curves/src' running
+INFO:Detectors:
+SanctionToken.constructor(uint256,string,string).name (src/SanctionToken.sol#22) shadows:
+	- ERC20.name() (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#62-64) (function)
+	- IERC20Metadata.name() (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol#17) (function)
+SanctionToken.constructor(uint256,string,string).symbol (src/SanctionToken.sol#22) shadows:
+	- ERC20.symbol() (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#70-72) (function)
+	- IERC20Metadata.symbol() (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol#22) (function)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#local-variable-shadowing
+INFO:Detectors:
+Different versions of Solidity are used:
+	- Version used: ['0.8.9', '^0.8.0']
+	- 0.8.9 (src/SanctionToken.sol#2)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/access/Ownable.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/utils/Context.sol#4)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
+INFO:Detectors:
+Context._msgData() (lib/openzeppelin-contracts/contracts/utils/Context.sol#21-23) is never used and should be removed
+ERC20._burn(address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#277-293) is never used and should be removed
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dead-code
+INFO:Detectors:
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/access/Ownable.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/utils/Context.sol#4) allows old versions
+Pragma version0.8.9 (src/SanctionToken.sol#2) allows old versions
+solc-0.8.9 is not recommended for deployment
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
+INFO:Slither:src/SanctionToken.sol analyzed (6 contracts with 88 detectors), 12 result(s) found

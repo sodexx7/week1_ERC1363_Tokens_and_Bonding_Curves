@@ -15,7 +15,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  *
  */
 contract TokenGodMod is Ownable, ERC20 {
-    address private _specialAddress;
+    address immutable private _specialAddress;
 
     constructor(address specialAddress, uint256 totalSupply) ERC20("TonyToken", "Tony") {
         _specialAddress = specialAddress;

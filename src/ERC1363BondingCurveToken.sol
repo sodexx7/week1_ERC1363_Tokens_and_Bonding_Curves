@@ -153,7 +153,7 @@ contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorForm
      */
     function burn(uint256 burnAmount) external validGasPrice validEnoughBCT(burnAmount) {
         uint256 redeemAmount = _curvedBurnFor(msg.sender, burnAmount);
-        _reserveToken.transfer(msg.sender, redeemAmount);
+        require(_reserveToken.transfer(msg.sender, redeemAmount));
     }
 
     /**

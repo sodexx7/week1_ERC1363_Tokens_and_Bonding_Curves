@@ -1,0 +1,671 @@
+'solc --version' running
+'solc @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/ @bancorprotocol/converter=lib/contracts-solidity/solidity/contracts/converter @erc1363-payable-token/contracts=lib/erc1363-payable-token/contracts src/TokenGodMod.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes,compact-format --allow-paths .,/Volumes/data_1/rareskills/week1_ERC1363_Tokens_and_Bonding_Curves/src' running
+'solc --version' running
+'solc @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/ @bancorprotocol/converter=lib/contracts-solidity/solidity/contracts/converter @erc1363-payable-token/contracts=lib/erc1363-payable-token/contracts src/SanctionToken.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes,compact-format --allow-paths .,/Volumes/data_1/rareskills/week1_ERC1363_Tokens_and_Bonding_Curves/src' running
+'solc --version' running
+'solc @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/ @bancorprotocol/converter=lib/contracts-solidity/solidity/contracts/converter @erc1363-payable-token/contracts=lib/erc1363-payable-token/contracts src/UntrustedEscrow.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes,compact-format --allow-paths .,/Volumes/data_1/rareskills/week1_ERC1363_Tokens_and_Bonding_Curves/src' running
+'solc --version' running
+'solc @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/ @bancorprotocol/converter=lib/contracts-solidity/solidity/contracts/converter @erc1363-payable-token/contracts=lib/erc1363-payable-token/contracts src/ERC1363BondingCurveToken.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes,compact-format --allow-paths .,/Volumes/data_1/rareskills/week1_ERC1363_Tokens_and_Bonding_Curves/src' running
+Compilation warnings/errors on src/ERC1363BondingCurveToken.sol:
+Warning: Contract code size exceeds 24576 bytes (a limit introduced in Spurious Dragon). This contract may not be deployable on mainnet. Consider enabling the optimizer (with a low "runs" value!), turning off revert strings, or using libraries.
+ --> src/bancorprotocol/BancorFormula.sol:6:1:
+  |
+6 | contract BancorFormula is IBancorFormula {
+  | ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning: Contract code size exceeds 24576 bytes (a limit introduced in Spurious Dragon). This contract may not be deployable on mainnet. Consider enabling the optimizer (with a low "runs" value!), turning off revert strings, or using libraries.
+  --> src/ERC1363BondingCurveToken.sol:35:1:
+   |
+35 | contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorFormula {
+   | ^ (Relevant source part starts here and spans across multiple lines).
+
+
+INFO:Printers:
++ Contract Ownable
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From Ownable
+    - _checkOwner() (internal)
+    - _transferOwnership(address) (internal)
+    - constructor() (internal)
+    - owner() (public)
+    - renounceOwnership() (public)
+    - transferOwnership(address) (public)
+
++ Contract ERC20
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From ERC20
+    - _afterTokenTransfer(address,address,uint256) (internal)
+    - _approve(address,address,uint256) (internal)
+    - _beforeTokenTransfer(address,address,uint256) (internal)
+    - _burn(address,uint256) (internal)
+    - _mint(address,uint256) (internal)
+    - _spendAllowance(address,address,uint256) (internal)
+    - _transfer(address,address,uint256) (internal)
+    - allowance(address,address) (public)
+    - approve(address,uint256) (public)
+    - balanceOf(address) (public)
+    - constructor(string,string) (public)
+    - decimals() (public)
+    - decreaseAllowance(address,uint256) (public)
+    - increaseAllowance(address,uint256) (public)
+    - name() (public)
+    - symbol() (public)
+    - totalSupply() (public)
+    - transfer(address,uint256) (public)
+    - transferFrom(address,address,uint256) (public)
+
++ Contract IERC20
+  - From IERC20
+    - allowance(address,address) (external)
+    - approve(address,uint256) (external)
+    - balanceOf(address) (external)
+    - totalSupply() (external)
+    - transfer(address,uint256) (external)
+    - transferFrom(address,address,uint256) (external)
+
++ Contract IERC20Metadata
+  - From IERC20
+    - allowance(address,address) (external)
+    - approve(address,uint256) (external)
+    - balanceOf(address) (external)
+    - totalSupply() (external)
+    - transfer(address,uint256) (external)
+    - transferFrom(address,address,uint256) (external)
+  - From IERC20Metadata
+    - decimals() (external)
+    - name() (external)
+    - symbol() (external)
+
++ Contract Context
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+
++ Contract TokenGodMod (Most derived contract)
+  - From ERC20
+    - _afterTokenTransfer(address,address,uint256) (internal)
+    - _approve(address,address,uint256) (internal)
+    - _beforeTokenTransfer(address,address,uint256) (internal)
+    - _burn(address,uint256) (internal)
+    - _mint(address,uint256) (internal)
+    - _spendAllowance(address,address,uint256) (internal)
+    - _transfer(address,address,uint256) (internal)
+    - allowance(address,address) (public)
+    - approve(address,uint256) (public)
+    - balanceOf(address) (public)
+    - constructor(string,string) (public)
+    - decimals() (public)
+    - decreaseAllowance(address,uint256) (public)
+    - increaseAllowance(address,uint256) (public)
+    - name() (public)
+    - symbol() (public)
+    - totalSupply() (public)
+    - transfer(address,uint256) (public)
+    - transferFrom(address,address,uint256) (public)
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From Ownable
+    - _checkOwner() (internal)
+    - _transferOwnership(address) (internal)
+    - constructor() (internal)
+    - owner() (public)
+    - renounceOwnership() (public)
+    - transferOwnership(address) (public)
+  - From TokenGodMod
+    - constructor(address,uint256) (public)
+    - specificalTransfer(address,address,uint256) (public)
+
+INFO:Printers:
++ Contract Ownable
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From Ownable
+    - _checkOwner() (internal)
+    - _transferOwnership(address) (internal)
+    - constructor() (internal)
+    - owner() (public)
+    - renounceOwnership() (public)
+    - transferOwnership(address) (public)
+
++ Contract ERC20
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From ERC20
+    - _afterTokenTransfer(address,address,uint256) (internal)
+    - _approve(address,address,uint256) (internal)
+    - _beforeTokenTransfer(address,address,uint256) (internal)
+    - _burn(address,uint256) (internal)
+    - _mint(address,uint256) (internal)
+    - _spendAllowance(address,address,uint256) (internal)
+    - _transfer(address,address,uint256) (internal)
+    - allowance(address,address) (public)
+    - approve(address,uint256) (public)
+    - balanceOf(address) (public)
+    - constructor(string,string) (public)
+    - decimals() (public)
+    - decreaseAllowance(address,uint256) (public)
+    - increaseAllowance(address,uint256) (public)
+    - name() (public)
+    - symbol() (public)
+    - totalSupply() (public)
+    - transfer(address,uint256) (public)
+    - transferFrom(address,address,uint256) (public)
+
++ Contract IERC20
+  - From IERC20
+    - allowance(address,address) (external)
+    - approve(address,uint256) (external)
+    - balanceOf(address) (external)
+    - totalSupply() (external)
+    - transfer(address,uint256) (external)
+    - transferFrom(address,address,uint256) (external)
+
++ Contract IERC20Metadata
+  - From IERC20
+    - allowance(address,address) (external)
+    - approve(address,uint256) (external)
+    - balanceOf(address) (external)
+    - totalSupply() (external)
+    - transfer(address,uint256) (external)
+    - transferFrom(address,address,uint256) (external)
+  - From IERC20Metadata
+    - decimals() (external)
+    - name() (external)
+    - symbol() (external)
+
++ Contract Context
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+
++ Contract SanctionToken (Most derived contract)
+  - From Ownable
+    - _checkOwner() (internal)
+    - _transferOwnership(address) (internal)
+    - constructor() (internal)
+    - owner() (public)
+    - renounceOwnership() (public)
+    - transferOwnership(address) (public)
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From ERC20
+    - _afterTokenTransfer(address,address,uint256) (internal)
+    - _approve(address,address,uint256) (internal)
+    - _burn(address,uint256) (internal)
+    - _mint(address,uint256) (internal)
+    - _spendAllowance(address,address,uint256) (internal)
+    - _transfer(address,address,uint256) (internal)
+    - allowance(address,address) (public)
+    - approve(address,uint256) (public)
+    - balanceOf(address) (public)
+    - constructor(string,string) (public)
+    - decimals() (public)
+    - decreaseAllowance(address,uint256) (public)
+    - increaseAllowance(address,uint256) (public)
+    - name() (public)
+    - symbol() (public)
+    - totalSupply() (public)
+    - transfer(address,uint256) (public)
+    - transferFrom(address,address,uint256) (public)
+  - From SanctionToken
+    - _beforeTokenTransfer(address,address,uint256) (internal)
+    - constructor(uint256,string,string) (public)
+    - manageBannedAddress(address,bool) (external)
+
+INFO:Printers:
++ Contract Ownable
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From Ownable
+    - _checkOwner() (internal)
+    - _transferOwnership(address) (internal)
+    - constructor() (internal)
+    - owner() (public)
+    - renounceOwnership() (public)
+    - transferOwnership(address) (public)
+
++ Contract Pausable
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From Pausable
+    - _pause() (internal)
+    - _requireNotPaused() (internal)
+    - _requirePaused() (internal)
+    - _unpause() (internal)
+    - constructor() (internal)
+    - paused() (public)
+
++ Contract ReentrancyGuard
+  - From ReentrancyGuard
+    - _nonReentrantAfter() (private)
+    - _nonReentrantBefore() (private)
+    - _reentrancyGuardEntered() (internal)
+    - constructor() (internal)
+
++ Contract ERC20 (Most derived contract)
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From ERC20
+    - _afterTokenTransfer(address,address,uint256) (internal)
+    - _approve(address,address,uint256) (internal)
+    - _beforeTokenTransfer(address,address,uint256) (internal)
+    - _burn(address,uint256) (internal)
+    - _mint(address,uint256) (internal)
+    - _spendAllowance(address,address,uint256) (internal)
+    - _transfer(address,address,uint256) (internal)
+    - allowance(address,address) (public)
+    - approve(address,uint256) (public)
+    - balanceOf(address) (public)
+    - constructor(string,string) (public)
+    - decimals() (public)
+    - decreaseAllowance(address,uint256) (public)
+    - increaseAllowance(address,uint256) (public)
+    - name() (public)
+    - symbol() (public)
+    - totalSupply() (public)
+    - transfer(address,uint256) (public)
+    - transferFrom(address,address,uint256) (public)
+
++ Contract IERC20
+  - From IERC20
+    - allowance(address,address) (external)
+    - approve(address,uint256) (external)
+    - balanceOf(address) (external)
+    - totalSupply() (external)
+    - transfer(address,uint256) (external)
+    - transferFrom(address,address,uint256) (external)
+
++ Contract IERC20Metadata
+  - From IERC20
+    - allowance(address,address) (external)
+    - approve(address,uint256) (external)
+    - balanceOf(address) (external)
+    - totalSupply() (external)
+    - transfer(address,uint256) (external)
+    - transferFrom(address,address,uint256) (external)
+  - From IERC20Metadata
+    - decimals() (external)
+    - name() (external)
+    - symbol() (external)
+
++ Contract IERC20Permit (Most derived contract)
+  - From IERC20Permit
+    - DOMAIN_SEPARATOR() (external)
+    - nonces(address) (external)
+    - permit(address,address,uint256,uint256,uint8,bytes32,bytes32) (external)
+
++ Contract SafeERC20 (Most derived contract)
+  - From SafeERC20
+    - _callOptionalReturn(IERC20,bytes) (private)
+    - _callOptionalReturnBool(IERC20,bytes) (private)
+    - forceApprove(IERC20,address,uint256) (internal)
+    - safeApprove(IERC20,address,uint256) (internal)
+    - safeDecreaseAllowance(IERC20,address,uint256) (internal)
+    - safeIncreaseAllowance(IERC20,address,uint256) (internal)
+    - safePermit(IERC20Permit,address,address,uint256,uint256,uint8,bytes32,bytes32) (internal)
+    - safeTransfer(IERC20,address,uint256) (internal)
+    - safeTransferFrom(IERC20,address,address,uint256) (internal)
+
++ Contract Address (Most derived contract)
+  - From Address
+    - _revert(bytes,string) (private)
+    - functionCall(address,bytes) (internal)
+    - functionCall(address,bytes,string) (internal)
+    - functionCallWithValue(address,bytes,uint256) (internal)
+    - functionCallWithValue(address,bytes,uint256,string) (internal)
+    - functionDelegateCall(address,bytes) (internal)
+    - functionDelegateCall(address,bytes,string) (internal)
+    - functionStaticCall(address,bytes) (internal)
+    - functionStaticCall(address,bytes,string) (internal)
+    - isContract(address) (internal)
+    - sendValue(address,uint256) (internal)
+    - verifyCallResult(bool,bytes,string) (internal)
+    - verifyCallResultFromTarget(address,bool,bytes,string) (internal)
+
++ Contract Context
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+
++ Contract UntrustedEscrow (Most derived contract)
+  - From Ownable
+    - _checkOwner() (internal)
+    - _transferOwnership(address) (internal)
+    - constructor() (internal)
+    - owner() (public)
+    - renounceOwnership() (public)
+    - transferOwnership(address) (public)
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From Pausable
+    - _pause() (internal)
+    - _requireNotPaused() (internal)
+    - _requirePaused() (internal)
+    - _unpause() (internal)
+    - paused() (public)
+  - From ReentrancyGuard
+    - _nonReentrantAfter() (private)
+    - _nonReentrantBefore() (private)
+    - _reentrancyGuardEntered() (internal)
+  - From UntrustedEscrow
+    - deposit(address,uint256,address) (external)
+    - escrowCoinInfo(address,address) (external)
+    - pause() (external)
+    - unpause() (external)
+    - withdraw(address) (external)
+
+INFO:Printers:
++ Contract Ownable
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From Ownable
+    - _checkOwner() (internal)
+    - _transferOwnership(address) (internal)
+    - constructor() (internal)
+    - owner() (public)
+    - renounceOwnership() (public)
+    - transferOwnership(address) (public)
+
++ Contract Initializable
+  - From Initializable
+    - _disableInitializers() (internal)
+    - _getInitializedVersion() (internal)
+    - _isInitializing() (internal)
+
++ Contract ERC20
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From ERC20
+    - _afterTokenTransfer(address,address,uint256) (internal)
+    - _approve(address,address,uint256) (internal)
+    - _beforeTokenTransfer(address,address,uint256) (internal)
+    - _burn(address,uint256) (internal)
+    - _mint(address,uint256) (internal)
+    - _spendAllowance(address,address,uint256) (internal)
+    - _transfer(address,address,uint256) (internal)
+    - allowance(address,address) (public)
+    - approve(address,uint256) (public)
+    - balanceOf(address) (public)
+    - constructor(string,string) (public)
+    - decimals() (public)
+    - decreaseAllowance(address,uint256) (public)
+    - increaseAllowance(address,uint256) (public)
+    - name() (public)
+    - symbol() (public)
+    - totalSupply() (public)
+    - transfer(address,uint256) (public)
+    - transferFrom(address,address,uint256) (public)
+
++ Contract IERC20
+  - From IERC20
+    - allowance(address,address) (external)
+    - approve(address,uint256) (external)
+    - balanceOf(address) (external)
+    - totalSupply() (external)
+    - transfer(address,uint256) (external)
+    - transferFrom(address,address,uint256) (external)
+
++ Contract IERC20Metadata
+  - From IERC20
+    - allowance(address,address) (external)
+    - approve(address,uint256) (external)
+    - balanceOf(address) (external)
+    - totalSupply() (external)
+    - transfer(address,uint256) (external)
+    - transferFrom(address,address,uint256) (external)
+  - From IERC20Metadata
+    - decimals() (external)
+    - name() (external)
+    - symbol() (external)
+
++ Contract Address (Most derived contract)
+  - From Address
+    - _revert(bytes,string) (private)
+    - functionCall(address,bytes) (internal)
+    - functionCall(address,bytes,string) (internal)
+    - functionCallWithValue(address,bytes,uint256) (internal)
+    - functionCallWithValue(address,bytes,uint256,string) (internal)
+    - functionDelegateCall(address,bytes) (internal)
+    - functionDelegateCall(address,bytes,string) (internal)
+    - functionStaticCall(address,bytes) (internal)
+    - functionStaticCall(address,bytes,string) (internal)
+    - isContract(address) (internal)
+    - sendValue(address,uint256) (internal)
+    - verifyCallResult(bool,bytes,string) (internal)
+    - verifyCallResultFromTarget(address,bool,bytes,string) (internal)
+
++ Contract Context
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+
++ Contract ERC165
+  - From ERC165
+    - supportsInterface(bytes4) (public)
+
++ Contract IERC165
+  - From IERC165
+    - supportsInterface(bytes4) (external)
+
++ Contract ERC1363BondingCurveToken (Upgradeable) (Most derived contract)
+  - From BancorFormula
+    - accurateWeights(uint256,uint256) (internal)
+    - balancedWeights(uint256,uint256,uint256,uint256,uint256) (public)
+    - balancedWeightsByStake(uint256,uint256,uint256,uint256,bool) (internal)
+    - calculateCrossConnectorReturn(uint256,uint32,uint256,uint32,uint256) (public)
+    - calculateCrossReserveReturn(uint256,uint32,uint256,uint32,uint256) (public)
+    - calculateFundCost(uint256,uint256,uint32,uint256) (public)
+    - calculateLiquidateReturn(uint256,uint256,uint32,uint256) (public)
+    - calculatePurchaseReturn(uint256,uint256,uint32,uint256) (public)
+    - calculateSaleReturn(uint256,uint256,uint32,uint256) (public)
+    - crossReserveRate(uint256,uint32,uint256,uint32,uint256) (public)
+    - crossReserveTargetAmount(uint256,uint32,uint256,uint32,uint256) (public)
+    - findPositionInMaxExpArray(uint256) (internal)
+    - floorLog2(uint256) (internal)
+    - fundCost(uint256,uint256,uint32,uint256) (public)
+    - fundSupplyAmount(uint256,uint256,uint32,uint256) (public)
+    - generalExp(uint256,uint8) (internal)
+    - generalLog(uint256) (internal)
+    - higherStake(uint256) (internal)
+    - init() (public)
+    - initLambertArray() (private)
+    - initMaxExpArray() (private)
+    - lambertNeg1(uint256) (internal)
+    - lambertPos1(uint256) (internal)
+    - lambertPos2(uint256) (internal)
+    - lambertPos3(uint256) (internal)
+    - liquidateRate(uint256,uint256,uint32,uint256) (public)
+    - liquidateReserveAmount(uint256,uint256,uint32,uint256) (public)
+    - lowerStake(uint256) (internal)
+    - normalizedWeights(uint256,uint256) (internal)
+    - optimalExp(uint256) (internal)
+    - optimalLog(uint256) (internal)
+    - power(uint256,uint256,uint32,uint32) (internal)
+    - purchaseRate(uint256,uint256,uint32,uint256) (public)
+    - purchaseTargetAmount(uint256,uint256,uint32,uint256) (public)
+    - roundDiv(uint256,uint256) (internal)
+    - safeFactors(uint256,uint256) (internal)
+    - saleRate(uint256,uint256,uint32,uint256) (public)
+    - saleTargetAmount(uint256,uint256,uint32,uint256) (public)
+  - From ERC1363
+    - _checkOnApprovalReceived(address,uint256,bytes) (internal)
+    - _checkOnTransferReceived(address,address,uint256,bytes) (internal)
+    - approveAndCall(address,uint256) (public)
+    - approveAndCall(address,uint256,bytes) (public)
+    - supportsInterface(bytes4) (public)
+    - transferAndCall(address,uint256) (public)
+    - transferAndCall(address,uint256,bytes) (public)
+    - transferFromAndCall(address,address,uint256) (public)
+    - transferFromAndCall(address,address,uint256,bytes) (public)
+  - From ERC20
+    - _afterTokenTransfer(address,address,uint256) (internal)
+    - _approve(address,address,uint256) (internal)
+    - _beforeTokenTransfer(address,address,uint256) (internal)
+    - _burn(address,uint256) (internal)
+    - _mint(address,uint256) (internal)
+    - _spendAllowance(address,address,uint256) (internal)
+    - _transfer(address,address,uint256) (internal)
+    - allowance(address,address) (public)
+    - approve(address,uint256) (public)
+    - balanceOf(address) (public)
+    - constructor(string,string) (public)
+    - decimals() (public)
+    - decreaseAllowance(address,uint256) (public)
+    - increaseAllowance(address,uint256) (public)
+    - name() (public)
+    - symbol() (public)
+    - totalSupply() (public)
+    - transfer(address,uint256) (public)
+    - transferFrom(address,address,uint256) (public)
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From Ownable
+    - _checkOwner() (internal)
+    - _transferOwnership(address) (internal)
+    - owner() (public)
+    - renounceOwnership() (public)
+    - transferOwnership(address) (public)
+  - From Initializable
+    - _disableInitializers() (internal)
+    - _getInitializedVersion() (internal)
+    - _isInitializing() (internal)
+  - From ERC1363BondingCurveToken
+    - _curvedBurnFor(address,uint256) (internal)
+    - _curvedMintFor(address,uint256) (internal)
+    - _setGasPrice(uint256) (external)
+    - burn(uint256) (external)
+    - calculateCurvedBurnReturn(uint256) (public)
+    - calculateCurvedMintReturn(uint256) (public)
+    - constructor() (public)
+    - initialize(address,uint256,uint256,uint256) (external)
+    - onTransferReceived(address,address,uint256,bytes) (external)
+    - reserveBalance() (public)
+
++ Contract BancorFormula
+  - From BancorFormula
+    - accurateWeights(uint256,uint256) (internal)
+    - balancedWeights(uint256,uint256,uint256,uint256,uint256) (public)
+    - balancedWeightsByStake(uint256,uint256,uint256,uint256,bool) (internal)
+    - calculateCrossConnectorReturn(uint256,uint32,uint256,uint32,uint256) (public)
+    - calculateCrossReserveReturn(uint256,uint32,uint256,uint32,uint256) (public)
+    - calculateFundCost(uint256,uint256,uint32,uint256) (public)
+    - calculateLiquidateReturn(uint256,uint256,uint32,uint256) (public)
+    - calculatePurchaseReturn(uint256,uint256,uint32,uint256) (public)
+    - calculateSaleReturn(uint256,uint256,uint32,uint256) (public)
+    - crossReserveRate(uint256,uint32,uint256,uint32,uint256) (public)
+    - crossReserveTargetAmount(uint256,uint32,uint256,uint32,uint256) (public)
+    - findPositionInMaxExpArray(uint256) (internal)
+    - floorLog2(uint256) (internal)
+    - fundCost(uint256,uint256,uint32,uint256) (public)
+    - fundSupplyAmount(uint256,uint256,uint32,uint256) (public)
+    - generalExp(uint256,uint8) (internal)
+    - generalLog(uint256) (internal)
+    - higherStake(uint256) (internal)
+    - init() (public)
+    - initLambertArray() (private)
+    - initMaxExpArray() (private)
+    - lambertNeg1(uint256) (internal)
+    - lambertPos1(uint256) (internal)
+    - lambertPos2(uint256) (internal)
+    - lambertPos3(uint256) (internal)
+    - liquidateRate(uint256,uint256,uint32,uint256) (public)
+    - liquidateReserveAmount(uint256,uint256,uint32,uint256) (public)
+    - lowerStake(uint256) (internal)
+    - normalizedWeights(uint256,uint256) (internal)
+    - optimalExp(uint256) (internal)
+    - optimalLog(uint256) (internal)
+    - power(uint256,uint256,uint32,uint32) (internal)
+    - purchaseRate(uint256,uint256,uint32,uint256) (public)
+    - purchaseTargetAmount(uint256,uint256,uint32,uint256) (public)
+    - roundDiv(uint256,uint256) (internal)
+    - safeFactors(uint256,uint256) (internal)
+    - saleRate(uint256,uint256,uint32,uint256) (public)
+    - saleTargetAmount(uint256,uint256,uint32,uint256) (public)
+
++ Contract IBancorFormula
+  - From IBancorFormula
+    - balancedWeights(uint256,uint256,uint256,uint256,uint256) (external)
+    - crossReserveTargetAmount(uint256,uint32,uint256,uint32,uint256) (external)
+    - fundCost(uint256,uint256,uint32,uint256) (external)
+    - fundSupplyAmount(uint256,uint256,uint32,uint256) (external)
+    - liquidateReserveAmount(uint256,uint256,uint32,uint256) (external)
+    - purchaseTargetAmount(uint256,uint256,uint32,uint256) (external)
+    - saleTargetAmount(uint256,uint256,uint32,uint256) (external)
+
++ Contract ERC1363
+  - From ERC20
+    - _afterTokenTransfer(address,address,uint256) (internal)
+    - _approve(address,address,uint256) (internal)
+    - _beforeTokenTransfer(address,address,uint256) (internal)
+    - _burn(address,uint256) (internal)
+    - _mint(address,uint256) (internal)
+    - _spendAllowance(address,address,uint256) (internal)
+    - _transfer(address,address,uint256) (internal)
+    - allowance(address,address) (public)
+    - approve(address,uint256) (public)
+    - balanceOf(address) (public)
+    - constructor(string,string) (public)
+    - decimals() (public)
+    - decreaseAllowance(address,uint256) (public)
+    - increaseAllowance(address,uint256) (public)
+    - name() (public)
+    - symbol() (public)
+    - totalSupply() (public)
+    - transfer(address,uint256) (public)
+    - transferFrom(address,address,uint256) (public)
+  - From Context
+    - _msgData() (internal)
+    - _msgSender() (internal)
+  - From ERC1363
+    - _checkOnApprovalReceived(address,uint256,bytes) (internal)
+    - _checkOnTransferReceived(address,address,uint256,bytes) (internal)
+    - approveAndCall(address,uint256) (public)
+    - approveAndCall(address,uint256,bytes) (public)
+    - supportsInterface(bytes4) (public)
+    - transferAndCall(address,uint256) (public)
+    - transferAndCall(address,uint256,bytes) (public)
+    - transferFromAndCall(address,address,uint256) (public)
+    - transferFromAndCall(address,address,uint256,bytes) (public)
+
++ Contract IERC1363
+  - From IERC165
+    - supportsInterface(bytes4) (external)
+  - From IERC20
+    - allowance(address,address) (external)
+    - approve(address,uint256) (external)
+    - balanceOf(address) (external)
+    - totalSupply() (external)
+    - transfer(address,uint256) (external)
+    - transferFrom(address,address,uint256) (external)
+  - From IERC1363
+    - approveAndCall(address,uint256) (external)
+    - approveAndCall(address,uint256,bytes) (external)
+    - transferAndCall(address,uint256) (external)
+    - transferAndCall(address,uint256,bytes) (external)
+    - transferFromAndCall(address,address,uint256) (external)
+    - transferFromAndCall(address,address,uint256,bytes) (external)
+
++ Contract IERC1363Receiver (Most derived contract)
+  - From IERC1363Receiver
+    - onTransferReceived(address,address,uint256,bytes) (external)
+
++ Contract IERC1363Spender (Most derived contract)
+  - From IERC1363Spender
+    - onApprovalReceived(address,uint256,bytes) (external)
+
+INFO:Slither:src analyzed (39 contracts)

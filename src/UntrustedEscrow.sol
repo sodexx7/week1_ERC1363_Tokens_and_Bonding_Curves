@@ -45,7 +45,7 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
     }
 
     // seller=>buyer=>ConInfo
-    mapping(address => mapping(address => CoinInfo)) private _seller_buyer_coinInfo;
+    mapping(address => mapping(address => CoinInfo)) private _sellerBuyeCoinInfo;
 
     // check seller is exsit
     mapping(address => bool) private _sellList;
@@ -72,7 +72,7 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
 
         CoinInfo memory coinInfo;
         if (_sellList[sellerAddress]) {
-            coinInfo = _seller_buyer_coinInfo[sellerAddress][msg.sender];
+            coinInfo = _sellerBuyeCoinInfo[sellerAddress][msg.sender];
             coinInfo.depositTimestamp = block.timestamp;
             coinInfo.balance = coinInfo.balance + amount;
         } else {
@@ -80,7 +80,7 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
             _sellList[sellerAddress] = true;
         }
 
-        _seller_buyer_coinInfo[sellerAddress][msg.sender] = coinInfo;
+        _sellerBuyeCoinInfo[sellerAddress][msg.sender] = coinInfo;
 
         uint256 transferBefore = ERC20(erc20Token).balanceOf(address(this));
         ERC20(erc20Token).safeTransferFrom(msg.sender, address(this), amount);
@@ -89,7 +89,7 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
         require(transferValue > 0, "actual deposit value should great than 0");
 
         if (transferValue < amount) {
-            _seller_buyer_coinInfo[sellerAddress][msg.sender].balance = transferValue;
+            _sellerBuyeCoinInfo[sellerAddress][msg.sender].balance = transferValue;
         }
 
         emit Deposit(msg.sender, sellerAddress, erc20Token, transferValue);
@@ -100,15 +100,15 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
      */
     function withdraw(address buyer) external validSeller(msg.sender) nonReentrant {
         require(
-            block.timestamp - _seller_buyer_coinInfo[msg.sender][buyer].depositTimestamp > 3 days,
+            block.timestamp - _sellerBuyeCoinInfo[msg.sender][buyer].depositTimestamp > 3 days,
             "Should withdraw after 3 days"
         );
 
-        CoinInfo memory coinInfo = _seller_buyer_coinInfo[msg.sender][buyer];
+        CoinInfo memory coinInfo = _sellerBuyeCoinInfo[msg.sender][buyer];
 
         require(coinInfo.balance > 0, "No Enough Balance");
 
-        delete _seller_buyer_coinInfo[msg.sender][buyer];
+        delete _sellerBuyeCoinInfo[msg.sender][buyer];
 
         // seller can withdraw which buyer's which erc20 balance
         ERC20(coinInfo.erc20).safeTransfer(msg.sender, coinInfo.balance);
@@ -116,8 +116,8 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
         emit Withdraw(
             msg.sender,
             buyer,
-            _seller_buyer_coinInfo[msg.sender][buyer].erc20,
-            _seller_buyer_coinInfo[msg.sender][buyer].balance
+            _sellerBuyeCoinInfo[msg.sender][buyer].erc20,
+            _sellerBuyeCoinInfo[msg.sender][buyer].balance
         );
     }
 
@@ -130,6 +130,6 @@ contract UntrustedEscrow is ReentrancyGuard, Pausable, Ownable {
     }
 
     function escrowCoinInfo(address seller, address buyer) external view returns (CoinInfo memory) {
-        return _seller_buyer_coinInfo[seller][buyer];
+        return _sellerBuyeCoinInfo[seller][buyer];
     }
 }

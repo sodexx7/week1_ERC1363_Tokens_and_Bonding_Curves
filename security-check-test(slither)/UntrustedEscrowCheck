@@ -1,0 +1,94 @@
+'solc --version' running
+'solc @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/ @bancorprotocol/converter=lib/contracts-solidity/solidity/contracts/converter @erc1363-payable-token/contracts=lib/erc1363-payable-token/contracts src/UntrustedEscrow.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes,compact-format --allow-paths .,/Volumes/data_1/rareskills/week1_ERC1363_Tokens_and_Bonding_Curves/src' running
+INFO:Detectors:
+Reentrancy in UntrustedEscrow.deposit(address,uint256,address) (src/UntrustedEscrow.sol#69-96):
+	External calls:
+	- ERC20(erc20Token).safeTransferFrom(msg.sender,address(this),amount) (src/UntrustedEscrow.sol#86)
+	State variables written after the call(s):
+	- _seller_buyer_coinInfo[sellerAddress][msg.sender].balance = transferValue (src/UntrustedEscrow.sol#92)
+	UntrustedEscrow._seller_buyer_coinInfo (src/UntrustedEscrow.sol#48) can be used in cross function reentrancies:
+	- UntrustedEscrow.deposit(address,uint256,address) (src/UntrustedEscrow.sol#69-96)
+	- UntrustedEscrow.escrowCoinInfo(address,address) (src/UntrustedEscrow.sol#132-134)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-1
+INFO:Detectors:
+Reentrancy in UntrustedEscrow.deposit(address,uint256,address) (src/UntrustedEscrow.sol#69-96):
+	External calls:
+	- ERC20(erc20Token).safeTransferFrom(msg.sender,address(this),amount) (src/UntrustedEscrow.sol#86)
+	Event emitted after the call(s):
+	- Deposit(msg.sender,sellerAddress,erc20Token,transferValue) (src/UntrustedEscrow.sol#95)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+INFO:Detectors:
+UntrustedEscrow.withdraw(address) (src/UntrustedEscrow.sol#101-122) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(block.timestamp - _seller_buyer_coinInfo[msg.sender][buyer].depositTimestamp > 259200,Should withdraw after 3 days) (src/UntrustedEscrow.sol#102-105)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Detectors:
+Address._revert(bytes,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#231-243) uses assembly
+	- INLINE ASM (lib/openzeppelin-contracts/contracts/utils/Address.sol#236-239)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+INFO:Detectors:
+Different versions of Solidity are used:
+	- Version used: ['0.8.9', '^0.8.0', '^0.8.1']
+	- 0.8.9 (src/UntrustedEscrow.sol#2)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/access/Ownable.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/security/Pausable.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/security/ReentrancyGuard.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#4)
+	- ^0.8.0 (lib/openzeppelin-contracts/contracts/utils/Context.sol#4)
+	- ^0.8.1 (lib/openzeppelin-contracts/contracts/utils/Address.sol#4)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
+INFO:Detectors:
+Address.functionCall(address,bytes) (lib/openzeppelin-contracts/contracts/utils/Address.sol#89-91) is never used and should be removed
+Address.functionCallWithValue(address,bytes,uint256) (lib/openzeppelin-contracts/contracts/utils/Address.sol#118-120) is never used and should be removed
+Address.functionDelegateCall(address,bytes) (lib/openzeppelin-contracts/contracts/utils/Address.sol#170-172) is never used and should be removed
+Address.functionDelegateCall(address,bytes,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#180-187) is never used and should be removed
+Address.functionStaticCall(address,bytes) (lib/openzeppelin-contracts/contracts/utils/Address.sol#145-147) is never used and should be removed
+Address.functionStaticCall(address,bytes,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#155-162) is never used and should be removed
+Address.sendValue(address,uint256) (lib/openzeppelin-contracts/contracts/utils/Address.sol#64-69) is never used and should be removed
+Address.verifyCallResult(bool,bytes,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#219-229) is never used and should be removed
+Context._msgData() (lib/openzeppelin-contracts/contracts/utils/Context.sol#21-23) is never used and should be removed
+ERC20._burn(address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#277-293) is never used and should be removed
+ERC20._mint(address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#251-264) is never used and should be removed
+ReentrancyGuard._reentrancyGuardEntered() (lib/openzeppelin-contracts/contracts/security/ReentrancyGuard.sol#74-76) is never used and should be removed
+SafeERC20._callOptionalReturnBool(IERC20,bytes) (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#134-142) is never used and should be removed
+SafeERC20.forceApprove(IERC20,address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#82-89) is never used and should be removed
+SafeERC20.safeApprove(IERC20,address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#45-54) is never used and should be removed
+SafeERC20.safeDecreaseAllowance(IERC20,address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#69-75) is never used and should be removed
+SafeERC20.safeIncreaseAllowance(IERC20,address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#60-63) is never used and should be removed
+SafeERC20.safePermit(IERC20Permit,address,address,uint256,uint256,uint8,bytes32,bytes32) (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#95-109) is never used and should be removed
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dead-code
+INFO:Detectors:
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/access/Ownable.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/security/Pausable.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/security/ReentrancyGuard.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#4) allows old versions
+Pragma version^0.8.1 (lib/openzeppelin-contracts/contracts/utils/Address.sol#4) allows old versions
+Pragma version^0.8.0 (lib/openzeppelin-contracts/contracts/utils/Context.sol#4) allows old versions
+Pragma version0.8.9 (src/UntrustedEscrow.sol#2) allows old versions
+solc-0.8.9 is not recommended for deployment
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
+INFO:Detectors:
+Low level call in SafeERC20._callOptionalReturnBool(IERC20,bytes) (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#134-142):
+	- (success,returndata) = address(token).call(data) (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#139)
+Low level call in Address.sendValue(address,uint256) (lib/openzeppelin-contracts/contracts/utils/Address.sol#64-69):
+	- (success) = recipient.call{value: amount}() (lib/openzeppelin-contracts/contracts/utils/Address.sol#67)
+Low level call in Address.functionCallWithValue(address,bytes,uint256,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#128-137):
+	- (success,returndata) = target.call{value: value}(data) (lib/openzeppelin-contracts/contracts/utils/Address.sol#135)
+Low level call in Address.functionStaticCall(address,bytes,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#155-162):
+	- (success,returndata) = target.staticcall(data) (lib/openzeppelin-contracts/contracts/utils/Address.sol#160)
+Low level call in Address.functionDelegateCall(address,bytes,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#180-187):
+	- (success,returndata) = target.delegatecall(data) (lib/openzeppelin-contracts/contracts/utils/Address.sol#185)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+INFO:Detectors:
+Function IERC20Permit.DOMAIN_SEPARATOR() (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol#59) is not in mixedCase
+Variable UntrustedEscrow._seller_buyer_coinInfo (src/UntrustedEscrow.sol#48) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+INFO:Slither:src/UntrustedEscrow.sol analyzed (11 contracts with 88 detectors), 42 result(s) found
