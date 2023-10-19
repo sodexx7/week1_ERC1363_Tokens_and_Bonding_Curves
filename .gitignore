@@ -22,4 +22,4 @@ commitFile.md
 src/Greeter.sol
 test/OtherTest.sol
 
-
+bin/

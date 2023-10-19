@@ -66,9 +66,6 @@ contract ERC1363BondingCurveToken is Initializable, Ownable, ERC1363, BancorForm
      */
     event CurvedBurn(address indexed sender, uint256 indexed burnAmount, uint256 redeemAmount);
 
-    // prevent sandswtich, when one sells BCTToken, shouldn't beyond the time that he bought the BCTToken last time.
-    error SellerBeyondCoolDownTime(address seller, uint256 lastBuyTime);
-
     // verifies that the gas price is lower than the universal limit
     modifier validGasPrice() {
         require(tx.gasprice <= _gasPriceInWei, "Below the required gas price");

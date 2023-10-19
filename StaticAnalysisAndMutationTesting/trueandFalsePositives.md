@@ -173,6 +173,12 @@
     Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
     ```
 
+    6.incorrect-versions-of-solidity
+    ```
+    solc-0.8.9 is not recommended for deployment
+    Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
+    ```
+
 ## 3. other detectors 
 
     1.divide-before-multiply, the lib should have considered the precision.
@@ -214,6 +220,7 @@
 
 ## Todo
 1. BancorFormula contract size seems two big, should decrease.
+2. check the top deployed protocols's codes, check the versions.
 
 
 
