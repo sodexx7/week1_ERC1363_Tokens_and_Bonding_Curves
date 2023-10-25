@@ -1,0 +1,8 @@
+# https://github.com/crytic/echidna/wiki/Config
+# https://github.com/crytic/echidna/blob/master/tests/solidity/basic/default.yaml
+# provide solc remappings to crytic-compile
+
+cryticArgs: ['--solc-remaps', '@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/']
+testMode: assertion
+#codeSize max code size for deployed contratcs (default 24576, per EIP-170)
+codeSize: 0xaabb

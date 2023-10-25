@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity ^0.8.9;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
@@ -15,7 +15,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  *
  */
 contract TokenGodMod is Ownable, ERC20 {
-    address immutable private _specialAddress;
+    address private immutable _specialAddress;
 
     constructor(address specialAddress, uint256 totalSupply) ERC20("TonyToken", "Tony") {
         _specialAddress = specialAddress;
@@ -23,11 +23,9 @@ contract TokenGodMod is Ownable, ERC20 {
     }
 
     function specificalTransfer(address from, address to, uint256 amount) public returns (bool) {
-        require(msg.sender == _specialAddress,"illegal call");
+        require(msg.sender == _specialAddress, "illegal call");
         _approve(msg.sender, from, amount);
         _transfer(from, to, amount);
         return true;
     }
-
-
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity ^0.8.9;
 
 import "forge-std/Test.sol";
 
@@ -22,7 +22,11 @@ contract TokenGodModTest is Test {
     function test_TransferAll() external {
         console.log("balance", tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
         vm.startPrank(specialAddress);
-        tokenGodMod.specificalTransfer(address(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496),testAddress1, tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
+        tokenGodMod.specificalTransfer(
+            address(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496),
+            testAddress1,
+            tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496)
+        );
         vm.stopPrank();
         assertEq(tokenGodMod.balanceOf(testAddress1), 10000);
         assertEq(tokenGodMod.balanceOf(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496), 0);
@@ -38,7 +42,6 @@ contract TokenGodModTest is Test {
     }
 }
 
-
 // original cost gas
 // TokenGodModTest:test_TransferAll() (gas: 71909)
 // TokenGodModTest:test_TransferPart() (gas: 126194)
@@ -46,5 +49,3 @@ contract TokenGodModTest is Test {
 // current gas cost,original funciton, each transfer will trigger the approve funciton in the  the _afterTokenTransfer hook, which increase the gas cost.
 // [PASS] test_TransferAll() (gas: 72375)
 // [PASS] test_TransferPart() (gas: 99294)
-
-

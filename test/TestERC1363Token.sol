@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity 0.8.20;
 
 import {ERC20, ERC1363} from "../src/erc1363-payable-token/ERC1363.sol";
 

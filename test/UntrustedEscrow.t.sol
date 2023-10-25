@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity ^0.8.9;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -64,7 +64,7 @@ contract UntrustedEscrowTest is Test {
             "untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance",
             untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance
         );
-        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, depositAmount-100);
+        assertEq(untrustedEscrow.escrowCoinInfo(testAddress_seller1, testAddress_buyer1).balance, depositAmount - 100);
 
         // two place check balance of testERC20
         // 1:testERC20 check balance of testERC20

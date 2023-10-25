@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity 0.8.20;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-
 
 /**
  *
@@ -23,12 +22,10 @@ contract TestERC20WithFees is ERC20 {
     }
 
     // simply mock the transfer with some fees which be burned
-      function transferFrom(address from, address to, uint256 amount) public virtual override returns (bool) {
+    function transferFrom(address from, address to, uint256 amount) public virtual override returns (bool) {
         address spender = _msgSender();
         _spendAllowance(from, spender, amount);
-        _transfer(from, to, amount-100);
+        _transfer(from, to, amount - 100);
         return true;
     }
-
-    
 }
