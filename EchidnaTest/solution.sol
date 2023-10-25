@@ -8,15 +8,6 @@ import {ERC1363TokenForEchidna} from "./ERC1363TokenForEchidna.sol";
 import {IERC1363Receiver} from "../src/erc1363-payable-token/IERC1363Receiver.sol";
 
 
-
-/// @dev Run the solution with
-///      ```
-///      solc-select use 0.7.5
-///      echidna EchidnaTest/solution1.sol
-//       echidna EchidnaTest/solution1.sol --test-limit 1000
-///      ```
-// echidna EchidnaTest/solution.sol --contract TestERC1363BondingCurveToken  --config echidna.yaml
-
 /**
     echidna EchidnaTest/solution.sol --contract TestERC1363BondingCurveToken  --config echidna.yaml
 
