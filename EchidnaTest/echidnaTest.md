@@ -5,3 +5,9 @@
 2. the amount of burn token shuuld euqal the corresponding minted token while burning
 
 ### question
+
+1. The results for  the invariants almost equal, but exist some small gaps as below. so I guess its the precision problem. Now can't sure TODO
+
+![mint_test](./result/mint_test.png)
+
+![burn_test](./result/burn_test.png)
